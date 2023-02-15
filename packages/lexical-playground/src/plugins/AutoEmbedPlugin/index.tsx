@@ -24,6 +24,7 @@ import useModal from '../../hooks/useModal';
 import Button from '../../ui/Button';
 import {DialogActions} from '../../ui/Dialog';
 import {INSERT_FIGMA_COMMAND} from '../FigmaPlugin';
+import {INSERT_TEXTLINK_COMMAND} from '../TextLinkPlugin';
 import {INSERT_TWEET_COMMAND} from '../TwitterPlugin';
 import {INSERT_YOUTUBE_COMMAND} from '../YouTubePlugin';
 
@@ -43,6 +44,40 @@ interface PlaygroundEmbedConfig extends EmbedConfig {
   // Embed a Figma Project.
   description?: string;
 }
+
+export const TextLinkEmbedConfig: PlaygroundEmbedConfig = {
+  contentName: 'Text Link',
+
+  exampleUrl: 'https://www.agoda.com/le-grande-bali/hotel/bali-id.html',
+
+  // Icon for display.
+  icon: <i className="icon link-simple" />,
+
+  insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => {
+    editor.dispatchCommand(INSERT_TEXTLINK_COMMAND, result.id);
+  },
+
+  keywords: ['textlink'],
+
+  // Determine if a given URL is a match and return url data.
+  parseUrl: async (url: string) => {
+    const match =
+      url === 'https://www.google.com';
+
+      const id = url;
+
+    if (match) {
+      return {
+        id,
+        url,
+      };
+    }
+
+    return null;
+  },
+
+  type: 'textlink',
+};
 
 export const YoutubeEmbedConfig: PlaygroundEmbedConfig = {
   contentName: 'Youtube Video',
