@@ -7,34 +7,14 @@
  */
 
 import type {
-  DOMConversionMap,
-  DOMConversionOutput,
-  DOMExportOutput,
-  EditorConfig,
-  ElementFormatType,
-  LexicalEditor,
   LexicalNode,
-  NodeKey,
-  Spread,
 } from 'lexical';
 
-import {
-  LinkNode,
-} from '@lexical/link/LexicalLink';
-import * as React from 'react';
+import { LinkNode } from '@lexical/link';
+
+import { TextNode } from '../../../lexical/src/nodes/LexicalTextNode';
 
 
-
-function convertYoutubeElement(
-  domNode: HTMLElement,
-): null | DOMConversionOutput {
-  const videoID = domNode.getAttribute('data-lexical-youtube');
-  if (videoID) {
-    const node = $createTextLinkNode(videoID);
-    return {node};
-  }
-  return null;
-}
 
 export class TextLinkNode extends LinkNode {
 
@@ -55,7 +35,10 @@ export class TextLinkNode extends LinkNode {
 
 export function $createTextLinkNode(urlID: string): TextLinkNode {
   // create link node here and then append the text node
-  return new TextLinkNode(urlID);
+  const textNode = new TextLinkNode(urlID);
+  const txtwithinNode = new TextNode('foo');
+  textNode.append(txtwithinNode );
+  return textNode
 }
 
 export function $isTextLinkNode(
