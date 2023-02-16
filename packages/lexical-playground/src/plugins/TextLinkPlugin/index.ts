@@ -6,23 +6,31 @@
  *
  */
 
+import {LinkNode} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {$insertNodeToNearestRoot} from '@lexical/utils';
-import {COMMAND_PRIORITY_EDITOR, createCommand, LexicalCommand} from 'lexical';
+import {COMMAND_PRIORITY_EDITOR, createCommand, LexicalCommand,TextNode} from 'lexical';
 import {useEffect} from 'react';
 
-import {$createTextLinkNode, TextLinkNode} from '../../nodes/TextLinkNode';
 
 export const INSERT_TEXTLINK_COMMAND: LexicalCommand<string> = createCommand(
   'INSERT_TEXTLINK_COMMAND',
 );
 
-export default function YouTubePlugin(): JSX.Element | null {
+function $createTextLinkNode(urlID: string): LinkNode {
+  // create link node here and then append the text node
+  const textNode = new LinkNode(urlID);
+  const txtwithinNode = new TextNode('foo');
+  textNode.append(txtwithinNode );
+  return textNode
+}
+
+export default function TextLinkPlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    if (!editor.hasNodes([TextLinkNode])) {
-      throw new Error('TextLinkPlugin: TextLinkNode not registered on editor');
+    if (!editor.hasNodes([LinkNode])) {
+      throw new Error('TextLinkPlugin: LinkNode not registered on editor');
     }
 
     return editor.registerCommand<string>(

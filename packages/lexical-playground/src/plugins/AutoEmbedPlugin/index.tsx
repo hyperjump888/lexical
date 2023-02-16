@@ -185,6 +185,7 @@ export const EmbedConfigs = [
   TwitterEmbedConfig,
   YoutubeEmbedConfig,
   FigmaEmbedConfig,
+  TextLinkEmbedConfig,
 ];
 
 function AutoEmbedMenuItem({
