@@ -8,7 +8,7 @@
 
 import {LinkNode} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {$insertNodeToNearestRoot} from '@lexical/utils';
+import {$insertNodeToNearestRoot, mergeRegister} from '@lexical/utils';
 import {COMMAND_PRIORITY_EDITOR, createCommand, LexicalCommand,TextNode} from 'lexical';
 import {useEffect} from 'react';
 
@@ -33,15 +33,17 @@ export default function TextLinkPlugin(): JSX.Element | null {
       throw new Error('TextLinkPlugin: LinkNode not registered on editor');
     }
 
-    return editor.registerCommand<string>(
-      INSERT_TEXTLINK_COMMAND,
-      (payload) => {
-        const textLinkNode = $createTextLinkNode(payload);
-        $insertNodeToNearestRoot(textLinkNode);
+    return mergeRegister(
+      editor.registerCommand<string>(
+        INSERT_TEXTLINK_COMMAND,
+        (payload) => {
+          const textLinkNode = $createTextLinkNode(payload);
+          $insertNodeToNearestRoot(textLinkNode);
 
-        return true;
-      },
-      COMMAND_PRIORITY_EDITOR,
+          return true;
+        },
+        COMMAND_PRIORITY_EDITOR,
+      ),
     );
   }, [editor]);
 
