@@ -19,6 +19,89 @@ export const INSERT_TEXTLINK_COMMAND: LexicalCommand<string> = createCommand(
   'INSERT_TEXTLINK_COMMAND',
 );
 
+
+function capitalizeWords(str: string): string {
+  let wordArr = str.split('-')
+  if (wordArr.length === 1) {
+    // google maps
+    wordArr = str.split('+')
+  } 
+  return wordArr.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+}
+
+function genericParse(args1: string): string {
+  const subsection = args1.split('/');
+
+  let longstr = ''
+  let longlen = 0
+  for (let i=0;i < subsection.length; i++) {
+    if (subsection[i].length > longlen) {
+      longlen = subsection[i].length
+      longstr = subsection[i]
+
+      if (i === subsection.length-1) {
+        // last section
+        const dotArr = longstr.split('.');
+        if (dotArr.length > 1 && dotArr[0].length > 3) {
+            longstr = dotArr[0]
+        }
+      }
+    }
+  }
+  return longstr
+}
+
+function checkLink(lnk: URL):string {
+  const mapReg = [
+     ['agoda.com', /\/[\w\-]+\/([\w\-]+)\// ],
+    ['booking.com', /\/hotel\/[\w\-]+\/([\w\-\.]+)\.[\w\-]+\.html/ ],
+    ['klook.com', /\/[\w\-]+\/[0-9]+\-([\w\-]+)\// ],
+    ['google.com', /\/maps\/place\/([\w\%\-\+]+)\// ],
+    [5, /\/[a-z\-]+\/([a-z\-]+)\//]
+  ];
+
+  let pathStr = ''
+  // agoda ur
+  for (let j=0;j < mapReg.length; j++) {
+    let findMatch = false
+    if (lnk.hostname === mapReg[j][0]) {
+        findMatch = true
+    }
+    if (!findMatch) {
+        if (lnk.hostname.startsWith('www.')) {
+            if (lnk.hostname.substring('www.'.length) === mapReg[j][0]) {
+                findMatch = true
+            }
+        }
+    }
+    if (findMatch) {
+      const result = lnk.pathname.match(mapReg[j][1]);  
+      if (!result) {
+        pathStr = genericParse(lnk.pathname); // <span class="my">
+        break
+      } else {
+        pathStr = result[1]; // <span class="my">
+        break
+      }    
+    }
+  }
+  if (pathStr.length === 0) {
+    pathStr = genericParse(lnk.pathname);
+  }
+  if (pathStr.length > 0) {
+    return capitalizeWords(decodeURIComponent(pathStr));
+  } else {
+    if (lnk.hostname.startsWith('www.') && lnk.hostname.endsWith('.com')) {
+        const lnkStr = lnk.hostname.split('.');
+        return capitalizeWords(lnkStr[1]);
+    } else {
+        return lnk.hostname;
+    }
+  }
+
+}
+
+
 function $createTextLinkNode(urlID: string): LinkNode {
   // create link node here and then append the text node
   const textNode = new LinkNode(urlID);
