@@ -51,13 +51,13 @@ function genericParse(args1: string): string {
   return longstr
 }
 
-function checkLink(lnk: URL):string {
-  const mapReg = [
+function getLinkText(lnk: URL):string {
+  // const mapReg:(string|RegExp)[][] = [
+  const mapReg:[string,RegExp][] = [
      ['agoda.com', /\/[\w\-]+\/([\w\-]+)\// ],
     ['booking.com', /\/hotel\/[\w\-]+\/([\w\-\.]+)\.[\w\-]+\.html/ ],
     ['klook.com', /\/[\w\-]+\/[0-9]+\-([\w\-]+)\// ],
     ['google.com', /\/maps\/place\/([\w\%\-\+]+)\// ],
-    [5, /\/[a-z\-]+\/([a-z\-]+)\//]
   ];
 
   let pathStr = ''
@@ -102,10 +102,10 @@ function checkLink(lnk: URL):string {
 }
 
 
-function $createTextLinkNode(urlID: string): LinkNode {
+function $createTextLinkNode(urlID: string, txt: string): LinkNode {
   // create link node here and then append the text node
   const textNode = new LinkNode(urlID);
-  const txtwithinNode = new TextNode('foo');
+  const txtwithinNode = new TextNode(txt);
   textNode.append(txtwithinNode );
   return textNode
 }
@@ -131,15 +131,21 @@ export default function TextLinkPlugin(): JSX.Element | null {
 
           if (event.clipboardData != null) {
             const text = event.clipboardData.getData('text/plain');
-            if (text != null && validateUrl(text)) {
-              console.log('IN TEXT LINK:' + text)
-              const nodes = [];
-              const textLinkNode = $createTextLinkNode(text);
-              nodes.push(textLinkNode);
-              selection.insertNodes(nodes);
-              return true;
-            }
+            if (text != null) {
+              try {
+                const myUrl = new URL(text);
+                console.log('IN TEXT LINK:' + text);
+                const txtForUrl = getLinkText(myUrl);
+                const nodes = [];
+                const textLinkNode = $createTextLinkNode(text,txtForUrl);
+                nodes.push(textLinkNode);
+                selection.insertNodes(nodes);
+                return true;                
+              } catch (error) {
+                // console.error(`Error: ${error}`);
+              }
 
+            }
             // $insertDataTransferForRichText(event.clipboardData, selection, editor);
             // const data = event.clipboardData.getData('text/plain')
             // onPasteForPlainText(event, editor);
