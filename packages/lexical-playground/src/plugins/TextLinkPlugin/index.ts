@@ -6,10 +6,11 @@
  *
  */
 
+import { $insertDataTransferForRichText} from '@lexical/clipboard';
 import {LinkNode} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {$insertNodeToNearestRoot, mergeRegister} from '@lexical/utils';
-import {COMMAND_PRIORITY_EDITOR, createCommand, LexicalCommand,TextNode} from 'lexical';
+import {$getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR, COMMAND_PRIORITY_HIGH, createCommand, LexicalCommand,PASTE_COMMAND,TextNode} from 'lexical';
 import {useEffect} from 'react';
 
 
@@ -34,16 +35,49 @@ export default function TextLinkPlugin(): JSX.Element | null {
     }
 
     return mergeRegister(
-      editor.registerCommand<string>(
-        INSERT_TEXTLINK_COMMAND,
-        (payload) => {
-          const textLinkNode = $createTextLinkNode(payload);
-          $insertNodeToNearestRoot(textLinkNode);
+      editor.registerCommand(
+        PASTE_COMMAND,
+        (event) => {
+          const paste1 = 1;
+          const selection = $getSelection();
+  
+          if (!$isRangeSelection(selection)) {
+            return false;
+          }
 
-          return true;
+          if (event.clipboardData != null) {
+            const text = event.clipboardData.getData('text/plain');
+            if (text != null) {
+              console.log('IN TEXT LINK:' + text)
+              const nodes = [];
+              const textLinkNode = $createTextLinkNode(text);
+              nodes.push(textLinkNode);
+              selection.insertNodes(nodes);
+              return true;
+            }
+
+            // $insertDataTransferForRichText(event.clipboardData, selection, editor);
+            // const data = event.clipboardData.getData('text/plain')
+            // onPasteForPlainText(event, editor);
+            return false;
+          }
+  
+
         },
-        COMMAND_PRIORITY_EDITOR,
+        COMMAND_PRIORITY_HIGH,
       ),
+      // editor.registerNodeTransform(TextNode, (node) => {
+      //   // const parent = node.getParent();
+      //   if (node.getTextContent() === 'css') {
+      //     const linkNode = new LinkNode(node.getTextContent())
+      //     const txtNode = new TextNode('boo')
+      //     linkNode.append(txtNode)
+      //     linkNode.insertBefore(node)
+      //     node.remove()
+
+      //   }
+      // }
+      // ),
     );
   }, [editor]);
 
