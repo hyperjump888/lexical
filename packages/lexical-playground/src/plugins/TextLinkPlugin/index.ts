@@ -6,12 +6,13 @@
  *
  */
 
-import { $insertDataTransferForRichText} from '@lexical/clipboard';
 import {LinkNode} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {$insertNodeToNearestRoot, mergeRegister} from '@lexical/utils';
+import {mergeRegister} from '@lexical/utils';
 import {$getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR, COMMAND_PRIORITY_HIGH, createCommand, LexicalCommand,PASTE_COMMAND,TextNode} from 'lexical';
 import {useEffect} from 'react';
+
+import {validateUrl} from '../../utils/url';
 
 
 export const INSERT_TEXTLINK_COMMAND: LexicalCommand<string> = createCommand(
@@ -47,7 +48,7 @@ export default function TextLinkPlugin(): JSX.Element | null {
 
           if (event.clipboardData != null) {
             const text = event.clipboardData.getData('text/plain');
-            if (text != null) {
+            if (text != null && validateUrl(text)) {
               console.log('IN TEXT LINK:' + text)
               const nodes = [];
               const textLinkNode = $createTextLinkNode(text);
