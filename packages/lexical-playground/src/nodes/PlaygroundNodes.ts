@@ -32,7 +32,6 @@ import {MentionNode} from './MentionNode';
 import {PollNode} from './PollNode';
 import {StickyNode} from './StickyNode';
 import {TableNode as NewTableNode} from './TableNode';
-import { TextLinkNode } from './TextLinkNode';
 import {TweetNode} from './TweetNode';
 import {YouTubeNode} from './YouTubeNode';
 
@@ -50,7 +49,6 @@ const PlaygroundNodes: Array<Klass<LexicalNode>> = [
   CodeHighlightNode,
   AutoLinkNode,
   LinkNode,
-  TextLinkNode,
   OverflowNode,
   PollNode,
   StickyNode,

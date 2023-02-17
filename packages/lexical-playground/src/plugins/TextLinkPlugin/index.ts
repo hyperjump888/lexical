@@ -12,8 +12,6 @@ import {mergeRegister} from '@lexical/utils';
 import {$getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR, COMMAND_PRIORITY_HIGH, createCommand, LexicalCommand,PASTE_COMMAND,TextNode} from 'lexical';
 import {useEffect} from 'react';
 
-import {validateUrl} from '../../utils/url';
-
 
 export const INSERT_TEXTLINK_COMMAND: LexicalCommand<string> = createCommand(
   'INSERT_TEXTLINK_COMMAND',
@@ -122,7 +120,6 @@ export default function TextLinkPlugin(): JSX.Element | null {
       editor.registerCommand(
         PASTE_COMMAND,
         (event) => {
-          const paste1 = 1;
           const selection = $getSelection();
   
           if (!$isRangeSelection(selection)) {
