@@ -222,10 +222,23 @@ function createUID(): string {
     .substr(0, 5);
 }
 
-export type SerializedTravelBudgetNode = SerializedLexicalNode & {
-  type: 'travelbudget';
-  version: 1;
-};
+export type TravelBudgetOption = Readonly<{
+  title: string;
+  time: string;
+  currency: string;
+  amt: number;
+  category: string;
+}>;
+
+
+export type SerializedTravelBudgetNode = Spread<
+  {
+    option: TravelBudgetOption;
+    type: 'travelbudget';
+    version: 1;
+  },
+  SerializedLexicalNode
+>;
 
 export const INSERT_TRAVEL_BUDGET_COMMAND: LexicalCommand<void> =
   createCommand('INSERT_TRAVEL_BUDGET_COMMAND');
@@ -297,12 +310,12 @@ function TravelBudgetComponent({nodeKey}: {nodeKey: NodeKey}) {
           <div className="TravelBudgetNode__singlefieldContainer">
             <h2 className="TravelBudgetNode__heading">Title</h2>
             <div className="TravelBudgetNode__textInputWrapper">
-              <input className="TravelBudgetNode__optionInput" type="text" placeholder="Visiting Disneyland" value="">
+              <input className="TravelBudgetNode__optionInput" type="text" placeholder="Visiting Disneyland" value="" />
             </div>
           </div>
           <div className="TravelBudgetNode__singlefieldContainer">
             <h2 className="TravelBudgetNode__heading">Time</h2>
-            <div className="TravelBudgetNode__textInputWrapper"><input className="TravelBudgetNode__optionInput" type="text" placeholder="10:00 AM" value=""/>
+            <div className="TravelBudgetNode__textInputWrapper"><input className="TravelBudgetNode__optionInput" type="text" placeholder="10:00 AM" value="" />
             </div>
           </div>
           <div className="TravelBudgetNode__singlefieldContainer">
@@ -317,7 +330,7 @@ function TravelBudgetComponent({nodeKey}: {nodeKey: NodeKey}) {
           </div>
           <div className="TravelBudgetNode__singlefieldContainer">
             <h2 className="TravelBudgetNode__heading">Amount</h2>
-            <div className="TravelBudgetNode__textInputWrapper"><input className="TravelBudgetNode__optionInput" type="text" placeholder="1000" value=""/></div>
+            <div className="TravelBudgetNode__textInputWrapper"><input className="TravelBudgetNode__optionInput" type="text" placeholder="1000" value="" /></div>
           </div>
           <div className="TravelBudgetNode__singlefieldContainer">
             <h2 className="TravelBudgetNode__heading">Category</h2>
@@ -337,12 +350,19 @@ function TravelBudgetComponent({nodeKey}: {nodeKey: NodeKey}) {
 }
 
 export class TravelBudgetNode extends DecoratorNode<JSX.Element> {
+  __options: TravelBudgetOption;
+
+  constructor(options: TravelBudgetOption, key?: NodeKey) {
+    super(key);
+    this.__options = options;
+  }
+
   static getType(): string {
     return 'travelbudget';
   }
 
   static clone(node: TravelBudgetNode): TravelBudgetNode {
-    return new TravelBudgetNode(node.__key);
+    return new TravelBudgetNode(node.__options,node.__key);
   }
 
   static importJSON(
