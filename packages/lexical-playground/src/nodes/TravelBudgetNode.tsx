@@ -223,14 +223,14 @@ function createUID(): string {
 }
 
 export type SerializedTravelBudgetNode = SerializedLexicalNode & {
-  type: 'horizontalrule';
+  type: 'travelbudget';
   version: 1;
 };
 
 export const INSERT_TRAVEL_BUDGET_COMMAND: LexicalCommand<void> =
   createCommand('INSERT_TRAVEL_BUDGET_COMMAND');
 
-function HorizontalRuleComponent({nodeKey}: {nodeKey: NodeKey}) {
+function TravelBudgetComponent({nodeKey}: {nodeKey: NodeKey}) {
   const [editor] = useLexicalComposerContext();
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
@@ -290,7 +290,50 @@ function HorizontalRuleComponent({nodeKey}: {nodeKey: NodeKey}) {
     }
   }, [editor, isSelected, nodeKey]);
 
-  return null;
+  return (
+    <div className="TravelBudgetNode__container">
+      <div className="TravelBudgetNode__inner">
+        <div className="TravelBudgetNode__fieldsContainer">
+          <div className="TravelBudgetNode__singlefieldContainer">
+            <h2 className="TravelBudgetNode__heading">Title</h2>
+            <div className="TravelBudgetNode__textInputWrapper">
+              <input className="TravelBudgetNode__optionInput" type="text" placeholder="Visiting Disneyland" value="">
+            </div>
+          </div>
+          <div className="TravelBudgetNode__singlefieldContainer">
+            <h2 className="TravelBudgetNode__heading">Time</h2>
+            <div className="TravelBudgetNode__textInputWrapper"><input className="TravelBudgetNode__optionInput" type="text" placeholder="10:00 AM" value=""/>
+            </div>
+          </div>
+          <div className="TravelBudgetNode__singlefieldContainer">
+            <h2 className="TravelBudgetNode__heading">Currency</h2>
+            <div className="TravelBudgetNode__textInputWrapper"><select className="TravelBudgetNode__optionInput" name="currency" id="currency">
+              <option value="usd">USD</option>
+              <option value="sgd">SGD</option>
+              <option value="idr">IDR</option>
+              <option value="thb">THB</option>
+              </select>
+            </div>
+          </div>
+          <div className="TravelBudgetNode__singlefieldContainer">
+            <h2 className="TravelBudgetNode__heading">Amount</h2>
+            <div className="TravelBudgetNode__textInputWrapper"><input className="TravelBudgetNode__optionInput" type="text" placeholder="1000" value=""/></div>
+          </div>
+          <div className="TravelBudgetNode__singlefieldContainer">
+            <h2 className="TravelBudgetNode__heading">Category</h2>
+            <div className="TravelBudgetNode__textInputWrapper"><select className="TravelBudgetNode__optionInput" name="category" id="category">
+              <option value="accommodation">Accommodation</option>
+              <option value="transportation">Transportation</option>
+              <option value="food">Food</option>
+              <option value="entertainment">Entertainment</option>
+              <option value="tour">Tour</option>
+              <option value="others">Others</option>
+            </select></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export class TravelBudgetNode extends DecoratorNode<JSX.Element> {
@@ -319,7 +362,7 @@ export class TravelBudgetNode extends DecoratorNode<JSX.Element> {
 
   exportJSON(): SerializedLexicalNode {
     return {
-      type: 'horizontalrule',
+      type: 'travelbudget',
       version: 1,
     };
   }
@@ -345,50 +388,7 @@ export class TravelBudgetNode extends DecoratorNode<JSX.Element> {
   }
 
   decorate(): JSX.Element {
-    return (
-      <div className="TravelBudgetNode__container">
-        <div className="TravelBudgetNode__inner">
-          <div className="TravelBudgetNode__fieldsContainer">
-            <div className="TravelBudgetNode__singlefieldContainer">
-              <h2 className="TravelBudgetNode__heading">Title</h2>
-              <div className="TravelBudgetNode__textInputWrapper">
-                <input className="TravelBudgetNode__optionInput" type="text" placeholder="Visiting Disneyland" value="">
-              </div>
-            </div>
-            <div className="TravelBudgetNode__singlefieldContainer">
-              <h2 className="TravelBudgetNode__heading">Time</h2>
-              <div className="TravelBudgetNode__textInputWrapper"><input className="TravelBudgetNode__optionInput" type="text" placeholder="10:00 AM" value=""/>
-              </div>
-            </div>
-            <div className="TravelBudgetNode__singlefieldContainer">
-              <h2 className="TravelBudgetNode__heading">Currency</h2>
-              <div className="TravelBudgetNode__textInputWrapper"><select className="TravelBudgetNode__optionInput" name="currency" id="currency">
-                <option value="usd">USD</option>
-                <option value="sgd">SGD</option>
-                <option value="idr">IDR</option>
-                <option value="thb">THB</option>
-                </select>
-              </div>
-            </div>
-            <div className="TravelBudgetNode__singlefieldContainer">
-              <h2 className="TravelBudgetNode__heading">Amount</h2>
-              <div className="TravelBudgetNode__textInputWrapper"><input className="TravelBudgetNode__optionInput" type="text" placeholder="1000" value=""/></div>
-            </div>
-            <div className="TravelBudgetNode__singlefieldContainer">
-              <h2 className="TravelBudgetNode__heading">Category</h2>
-              <div className="TravelBudgetNode__textInputWrapper"><select className="TravelBudgetNode__optionInput" name="category" id="category">
-                <option value="accommodation">Accommodation</option>
-                <option value="transportation">Transportation</option>
-                <option value="food">Food</option>
-                <option value="entertainment">Entertainment</option>
-                <option value="tour">Tour</option>
-                <option value="others">Others</option>
-              </select></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <TravelBudgetComponent nodeKey={this.__key} />
   }
 }
 
