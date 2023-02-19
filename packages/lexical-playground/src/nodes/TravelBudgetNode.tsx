@@ -6,17 +6,31 @@
  *
  */
 
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection';
 import {
+  $applyNodeReplacement,
+  $getNodeByKey,
+  $getSelection,
+  $isNodeSelection,
+  CLICK_COMMAND,
+  COMMAND_PRIORITY_LOW,
+  createCommand,
   DecoratorNode,
   DOMConversionMap,
   DOMConversionOutput,
   DOMExportOutput,
+  KEY_BACKSPACE_COMMAND,
+  KEY_DELETE_COMMAND,
+  LexicalCommand,
   LexicalNode,
   NodeKey,
   SerializedLexicalNode,
   Spread,
 } from 'lexical';
+import { mergeRegister } from 'packages/lexical-utils/src';
 import * as React from 'react';
+import {useCallback, useEffect} from 'react';
 import {Suspense} from 'react';
 
 export type Options = ReadonlyArray<Option>;
@@ -208,151 +222,122 @@ function createUID(): string {
     .substr(0, 5);
 }
 
-export function createPollOption(text = ''): Option {
-  return {
-    text,
-    uid: createUID(),
-    votes: [],
-  };
-}
+export type SerializedTravelBudgetNode = SerializedLexicalNode & {
+  type: 'horizontalrule';
+  version: 1;
+};
 
-function cloneOption(
-  option: Option,
-  text: string,
-  votes?: Array<number>,
-): Option {
-  return {
-    text,
-    uid: option.uid,
-    votes: votes || Array.from(option.votes),
-  };
-}
+export const INSERT_TRAVEL_BUDGET_COMMAND: LexicalCommand<void> =
+  createCommand('INSERT_TRAVEL_BUDGET_COMMAND');
 
-export type SerializedPollNode = Spread<
-  {
-    question: string;
-    options: Options;
-    type: 'poll';
-    version: 1;
-  },
-  SerializedLexicalNode
->;
+function HorizontalRuleComponent({nodeKey}: {nodeKey: NodeKey}) {
+  const [editor] = useLexicalComposerContext();
+  const [isSelected, setSelected, clearSelection] =
+    useLexicalNodeSelection(nodeKey);
 
-function convertPollElement(domNode: HTMLElement): DOMConversionOutput | null {
-  const question = domNode.getAttribute('data-lexical-poll-question');
-  if (question !== null) {
-    const node = $createPollNode(question);
-    return {node};
-  }
+  const onDelete = useCallback(
+    (payload: KeyboardEvent) => {
+      if (isSelected && $isNodeSelection($getSelection())) {
+        const event: KeyboardEvent = payload;
+        event.preventDefault();
+        const node = $getNodeByKey(nodeKey);
+        if ($isTravelBudgetNode(node)) {
+          node.remove();
+        }
+        setSelected(false);
+      }
+      return false;
+    },
+    [isSelected, nodeKey, setSelected],
+  );
+
+  useEffect(() => {
+    return mergeRegister(
+      editor.registerCommand(
+        CLICK_COMMAND,
+        (event: MouseEvent) => {
+          const hrElem = editor.getElementByKey(nodeKey);
+
+          if (event.target === hrElem) {
+            if (!event.shiftKey) {
+              clearSelection();
+            }
+            setSelected(!isSelected);
+            return true;
+          }
+
+          return false;
+        },
+        COMMAND_PRIORITY_LOW,
+      ),
+      editor.registerCommand(
+        KEY_DELETE_COMMAND,
+        onDelete,
+        COMMAND_PRIORITY_LOW,
+      ),
+      editor.registerCommand(
+        KEY_BACKSPACE_COMMAND,
+        onDelete,
+        COMMAND_PRIORITY_LOW,
+      ),
+    );
+  }, [clearSelection, editor, isSelected, nodeKey, onDelete, setSelected]);
+
+  useEffect(() => {
+    const tbElem = editor.getElementByKey(nodeKey);
+    if (tbElem !== null) {
+      tbElem.className = isSelected ? 'selected' : '';
+    }
+  }, [editor, isSelected, nodeKey]);
+
   return null;
 }
 
-export class PollNode extends DecoratorNode<JSX.Element> {
-  __question: string;
-  __options: Options;
-
+export class TravelBudgetNode extends DecoratorNode<JSX.Element> {
   static getType(): string {
-    return 'poll';
+    return 'travelbudget';
   }
 
-  static clone(node: PollNode): PollNode {
-    return new PollNode(node.__question, node.__options, node.__key);
+  static clone(node: TravelBudgetNode): TravelBudgetNode {
+    return new TravelBudgetNode(node.__key);
   }
 
-  static importJSON(serializedNode: SerializedPollNode): PollNode {
-    const node = new PollNode(serializedNode.question,serializedNode.options)
-    return node
-    // const node = $createPollNode(serializedNode.question);
-    // try {
-    //   serializedNode.options.forEach(node.addOption);
-    //   return node;
-    // } catch (error) {
-    //   console.error('import json failed')
-    //   return node
-    // }
-
-  }
-
-  constructor(question: string, options?: Options, key?: NodeKey) {
-    super(key);
-    this.__question = question;
-    this.__options = options || [createPollOption(), createPollOption()];
-  }
-
-  exportJSON(): SerializedPollNode {
-    return {
-      options: this.__options,
-      question: this.__question,
-      type: 'poll',
-      version: 1,
-    };
-  }
-
-  addOption(option: Option): void {
-    const self = this.getWritable();
-    const options = Array.from(self.__options);
-    options.push(option);
-    self.__options = options;
-  }
-
-  deleteOption(option: Option): void {
-    const self = this.getWritable();
-    const options = Array.from(self.__options);
-    const index = options.indexOf(option);
-    options.splice(index, 1);
-    self.__options = options;
-  }
-
-  setOptionText(option: Option, text: string): void {
-    const self = this.getWritable();
-    const clonedOption = cloneOption(option, text);
-    const options = Array.from(self.__options);
-    const index = options.indexOf(option);
-    options[index] = clonedOption;
-    self.__options = options;
-  }
-
-  toggleVote(option: Option, clientID: number): void {
-    const self = this.getWritable();
-    const votes = option.votes;
-    const votesClone = Array.from(votes);
-    const voteIndex = votes.indexOf(clientID);
-    if (voteIndex === -1) {
-      votesClone.push(clientID);
-    } else {
-      votesClone.splice(voteIndex, 1);
-    }
-    const clonedOption = cloneOption(option, option.text, votesClone);
-    const options = Array.from(self.__options);
-    const index = options.indexOf(option);
-    options[index] = clonedOption;
-    self.__options = options;
+  static importJSON(
+    serializedNode: SerializedTravelBudgetNode,
+  ): TravelBudgetNode {
+    return $createTravelBudgetNode();
   }
 
   static importDOM(): DOMConversionMap | null {
     return {
-      span: (domNode: HTMLElement) => {
-        if (!domNode.hasAttribute('data-lexical-poll-question')) {
-          return null;
-        }
-        return {
-          conversion: convertPollElement,
-          priority: 2,
-        };
-      },
+      span: () => ({
+        conversion: convertTravelBudgetElement,
+        priority: 0,
+      }),
+    };
+  }
+
+  exportJSON(): SerializedLexicalNode {
+    return {
+      type: 'horizontalrule',
+      version: 1,
     };
   }
 
   exportDOM(): DOMExportOutput {
-    const element = document.createElement('span');
-    element.setAttribute('data-lexical-poll-question', this.__question);
-    return {element};
+    return {element: document.createElement('span')};
   }
 
   createDOM(): HTMLElement {
-    const elem = document.createElement('span');
-    elem.style.display = 'inline-block';
-    return elem;
+    return document.createElement('span');
+  }
+
+  getTextContent(): '\n' {
+    return '\n';
+  }
+
+  isInline(): false {
+    return false;
   }
 
   updateDOM(): false {
@@ -361,23 +346,62 @@ export class PollNode extends DecoratorNode<JSX.Element> {
 
   decorate(): JSX.Element {
     return (
-      <Suspense fallback={null}>
-        <PollComponent
-          question={this.__question}
-          options={this.__options}
-          nodeKey={this.__key}
-        />
-      </Suspense>
+      <div className="TravelBudgetNode__container">
+        <div className="TravelBudgetNode__inner">
+          <div className="TravelBudgetNode__fieldsContainer">
+            <div className="TravelBudgetNode__singlefieldContainer">
+              <h2 className="TravelBudgetNode__heading">Title</h2>
+              <div className="TravelBudgetNode__textInputWrapper">
+                <input className="TravelBudgetNode__optionInput" type="text" placeholder="Visiting Disneyland" value="">
+              </div>
+            </div>
+            <div className="TravelBudgetNode__singlefieldContainer">
+              <h2 className="TravelBudgetNode__heading">Time</h2>
+              <div className="TravelBudgetNode__textInputWrapper"><input className="TravelBudgetNode__optionInput" type="text" placeholder="10:00 AM" value=""/>
+              </div>
+            </div>
+            <div className="TravelBudgetNode__singlefieldContainer">
+              <h2 className="TravelBudgetNode__heading">Currency</h2>
+              <div className="TravelBudgetNode__textInputWrapper"><select className="TravelBudgetNode__optionInput" name="currency" id="currency">
+                <option value="usd">USD</option>
+                <option value="sgd">SGD</option>
+                <option value="idr">IDR</option>
+                <option value="thb">THB</option>
+                </select>
+              </div>
+            </div>
+            <div className="TravelBudgetNode__singlefieldContainer">
+              <h2 className="TravelBudgetNode__heading">Amount</h2>
+              <div className="TravelBudgetNode__textInputWrapper"><input className="TravelBudgetNode__optionInput" type="text" placeholder="1000" value=""/></div>
+            </div>
+            <div className="TravelBudgetNode__singlefieldContainer">
+              <h2 className="TravelBudgetNode__heading">Category</h2>
+              <div className="TravelBudgetNode__textInputWrapper"><select className="TravelBudgetNode__optionInput" name="category" id="category">
+                <option value="accommodation">Accommodation</option>
+                <option value="transportation">Transportation</option>
+                <option value="food">Food</option>
+                <option value="entertainment">Entertainment</option>
+                <option value="tour">Tour</option>
+                <option value="others">Others</option>
+              </select></div>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 }
 
-export function $createPollNode(question: string): PollNode {
-  return new PollNode(question);
+function convertTravelBudgetElement(): DOMConversionOutput {
+  return {node: $createTravelBudgetNode()};
 }
 
-export function $isPollNode(
+export function $createTravelBudgetNode(): TravelBudgetNode {
+  return $applyNodeReplacement(new TravelBudgetNode());
+}
+
+export function $isTravelBudgetNode(
   node: LexicalNode | null | undefined,
-): node is PollNode {
-  return node instanceof PollNode;
+): node is TravelBudgetNode {
+  return node instanceof TravelBudgetNode;
 }
