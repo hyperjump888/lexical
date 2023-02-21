@@ -9,7 +9,7 @@
 import {LinkNode} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {mergeRegister} from '@lexical/utils';
-import {$getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR, COMMAND_PRIORITY_HIGH, createCommand, LexicalCommand,PASTE_COMMAND,TextNode} from 'lexical';
+import {$getSelection, $isRangeSelection,$getRoot, $createParagraphNode,  COMMAND_PRIORITY_EDITOR, COMMAND_PRIORITY_HIGH, createCommand, LexicalCommand,PASTE_COMMAND,TextNode} from 'lexical';
 import {useEffect} from 'react';
 
 
@@ -130,14 +130,22 @@ export default function TextLinkPlugin(): JSX.Element | null {
             const text = event.clipboardData.getData('text/plain');
             if (text != null) {
               try {
+                const root = $getRoot();
+                var content = root.getTextContent();
                 const myUrl = new URL(text);
                 console.log('IN TEXT LINK:' + text);
                 const txtForUrl = getLinkText(myUrl);
                 const nodes = [];
                 const textLinkNode = $createTextLinkNode(text,txtForUrl);
                 nodes.push(textLinkNode);
-                selection.insertNodes(nodes);
-                return true;                
+                if(content) {
+                  selection.insertNodes(nodes);
+                } else {
+                  const paragraphNode = $createParagraphNode();
+                  paragraphNode.append(textLinkNode)
+                  root.append(paragraphNode);
+                }
+                return true;
               } catch (error) {
                 // console.error(`Error: ${error}`);
               }
