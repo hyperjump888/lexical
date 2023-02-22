@@ -77,6 +77,7 @@ export const TextLinkEmbedConfig: PlaygroundEmbedConfig = {
   },
 
   type: 'textlink',
+
 };
 
 export const YoutubeEmbedConfig: PlaygroundEmbedConfig = {
