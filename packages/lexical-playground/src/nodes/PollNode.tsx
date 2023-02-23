@@ -91,17 +91,9 @@ export class PollNode extends DecoratorNode<JSX.Element> {
   }
 
   static importJSON(serializedNode: SerializedPollNode): PollNode {
-    const node = new PollNode(serializedNode.question,serializedNode.options)
-    return node
-    // const node = $createPollNode(serializedNode.question);
-    // try {
-    //   serializedNode.options.forEach(node.addOption);
-    //   return node;
-    // } catch (error) {
-    //   console.error('import json failed')
-    //   return node
-    // }
-
+    const node = $createPollNode(serializedNode.question);
+    serializedNode.options.forEach(node.addOption);
+    return node;
   }
 
   constructor(question: string, options?: Options, key?: NodeKey) {

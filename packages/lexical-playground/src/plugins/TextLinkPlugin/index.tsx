@@ -7,6 +7,7 @@
  */
 
 import {LinkNode} from '@lexical/link';
+
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {mergeRegister} from '@lexical/utils';
 import {
@@ -14,6 +15,7 @@ import {
   $isRangeSelection,
   $getRoot,
   $createParagraphNode,
+  $createTextNode,
   COMMAND_PRIORITY_EDITOR,
   COMMAND_PRIORITY_HIGH,
   createCommand,
@@ -146,14 +148,21 @@ export default function TextLinkPlugin(): JSX.Element | null {
             if (text != null) {
               try {
                 const root = $getRoot();
-                var content = root.getTextContent();
+                const content = root.getTextContent();
+                const selectionContent = selection.getNodes();
                 const myUrl = new URL(text);
                 console.log('IN TEXT LINK:' + text);
                 const txtForUrl = getLinkText(myUrl);
                 const nodes = [];
                 const textLinkNode = $createTextLinkNode(text,txtForUrl);
                 nodes.push(textLinkNode);
-                if(content) {
+                var isContent = false;
+                if(content){
+                  if(selectionContent.length && selectionContent[0]["__type"] == "text") {
+                    isContent = true;
+                  }
+                }
+                if(isContent){
                   selection.insertNodes(nodes);
                 } else {
                   const paragraphNode = $createParagraphNode();
