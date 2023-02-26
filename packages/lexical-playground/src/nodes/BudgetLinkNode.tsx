@@ -29,16 +29,12 @@ const ImageComponent = React.lazy(
   () => import('./ImageComponent'),
 );
 
-export interface ImagePayload {
-  altText: string;
-  caption?: LexicalEditor;
-  height?: number;
+export interface BudgetLinkPayload {
+  url: string;
+  currency: string;
+  amount: number;
+  category: string;
   key?: NodeKey;
-  maxWidth?: number;
-  showCaption?: boolean;
-  src: string;
-  width?: number;
-  captionsEnabled?: boolean;
 }
 
 function convertImageElement(domNode: Node): null | DOMConversionOutput {
@@ -80,15 +76,13 @@ export class BudgetLinkNode extends LinkNode {
   }
 
   static importJSON(serializedNode: SerializedBudgetLinkNode): BudgetLinkNode {
-    const {altText, height, width, maxWidth, caption, src, showCaption} =
+    const {url, currency, amount, category} =
       serializedNode;
     const node = $createBudgetLinkNode({
-      altText,
-      height,
-      maxWidth,
-      showCaption,
-      src,
-      width,
+      url,
+      currency,
+      amount,
+      category,
     });
     const nestedEditor = node.__caption;
     const editorState = nestedEditor.parseEditorState(caption.editorState);
@@ -204,26 +198,18 @@ n {
 }
 
 export function $createBudgetLinkNode({
-  altText,
-  height,
-  maxWidth = 500,
-  captionsEnabled,
-  src,
-  width,
-  showCaption,
-  caption,
+  url,
+  currency,
+  amount,
+  category,
   key,
-}: ImagePayload): BudgetLinkNode {
+}: BudgetLinkPayload): BudgetLinkNode {
   return $applyNodeReplacement(
     new BudgetLinkNode(
-      src,
-      altText,
-      maxWidth,
-      width,
-      height,
-      showCaption,
-      caption,
-      captionsEnabled,
+      url,
+      currency,
+      amount,
+      category,
       key,
     ),
   );
