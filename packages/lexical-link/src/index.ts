@@ -38,7 +38,7 @@ export type LinkAttributes = {
 
 export type SerializedLinkNode = Spread<
   {
-    type: 'link';
+    type: string;
     url: string;
     version: 1;
   },
@@ -139,7 +139,7 @@ export class LinkNode extends ElementNode {
     return node;
   }
 
-  exportJSON(): SerializedLinkNode | SerializedAutoLinkNode {
+  exportJSON(): SerializedLinkNode {
     return {
       ...super.exportJSON(),
       rel: this.getRel(),
@@ -259,13 +259,7 @@ export function $isLinkNode(
   return node instanceof LinkNode;
 }
 
-export type SerializedAutoLinkNode = Spread<
-  {
-    type: 'autolink';
-    version: 1;
-  },
-  SerializedLinkNode
->;
+export type SerializedAutoLinkNode = SerializedLinkNode;
 
 // Custom node type to override `canInsertTextAfter` that will
 // allow typing within the link
@@ -299,8 +293,9 @@ export class AutoLinkNode extends LinkNode {
   }
 
   exportJSON(): SerializedAutoLinkNode {
+    const baseSerialized = super.exportJSON();
     return {
-      ...super.exportJSON(),
+      ...baseSerialized,
       type: 'autolink',
       version: 1,
     };

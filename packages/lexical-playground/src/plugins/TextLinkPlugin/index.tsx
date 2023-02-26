@@ -7,28 +7,19 @@
  */
 
 import {LinkNode} from '@lexical/link';
-
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {mergeRegister} from '@lexical/utils';
 import {
+  $createParagraphNode,
+  $getRoot,
   $getSelection,
   $isRangeSelection,
-  $getRoot,
-  $createParagraphNode,
-  $createTextNode,
-  COMMAND_PRIORITY_EDITOR,
   COMMAND_PRIORITY_HIGH,
   createCommand,
   LexicalCommand,
   PASTE_COMMAND,
-  TextNode,
-  UNDO_COMMAND, ParagraphNode
-} from 'lexical';
-import {default as React, FC, useEffect} from 'react';
-import {IS_APPLE} from "shared/environment";
-import {LexicalComposer} from "@lexical/react/LexicalComposer";
-import theme from "../../themes/PlaygroundEditorTheme";
-
+  TextNode} from 'lexical';
+  import {default as React, FC, useEffect} from 'react';
 
 export const INSERT_TEXTLINK_COMMAND: LexicalCommand<string> = createCommand(
   'INSERT_TEXTLINK_COMMAND',
@@ -156,13 +147,13 @@ export default function TextLinkPlugin(): JSX.Element | null {
                 const nodes = [];
                 const textLinkNode = $createTextLinkNode(text,txtForUrl);
                 nodes.push(textLinkNode);
-                var isContent = false;
-                if(content){
-                  if(selectionContent.length && selectionContent[0]["__type"] == "text") {
+                let isContent = false;
+                if (content) {
+                  if (selectionContent.length && selectionContent[0].__type === 'text') {
                     isContent = true;
                   }
                 }
-                if(isContent){
+                if (isContent) {
                   selection.insertNodes(nodes);
                 } else {
                   const paragraphNode = $createParagraphNode();
