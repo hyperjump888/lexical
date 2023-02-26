@@ -14,6 +14,7 @@ import type {TextNode} from './nodes/LexicalTextNode';
 import {
   CAN_USE_BEFORE_INPUT,
   IS_APPLE_WEBKIT,
+  IS_APPLE_WEBKIT,
   IS_FIREFOX,
   IS_IOS,
   IS_SAFARI,
@@ -182,6 +183,7 @@ let collapsedSelectionFormat: [number, string, number, NodeKey, number] = [
 // composition mechanics.
 function $shouldPreventDefaultAndInsertText(
   selection: RangeSelection,
+  domTargetRange: null | StaticRange,
   text: string,
   timeStamp: number,
   isBeforeInput: boolean,
@@ -223,6 +225,13 @@ function $shouldPreventDefaultAndInsertText(
       backingAnchorElement !== null &&
       !anchorNode.isComposing() &&
       domAnchorNode !== getDOMTextNode(backingAnchorElement)) ||
+    // If TargetRange is not the same as the DOM selection; browser trying to edit random parts
+    // of the editor.
+    (domSelection !== null &&
+      domTargetRange !== null &&
+      (!domTargetRange.collapsed ||
+        domTargetRange.startContainer !== domSelection.anchorNode ||
+        domTargetRange.startOffset !== domSelection.anchorOffset)) ||
     // Check if we're changing from bold to italics, or some other format.
     anchorNode.getFormat() !== selection.format ||
     anchorNode.getStyle() !== selection.style ||
@@ -404,14 +413,15 @@ function onPointerDown(event: PointerEvent, editor: LexicalEditor) {
   }
 }
 
-function $applyTargetRange(selection: RangeSelection, event: InputEvent): void {
-  if (event.getTargetRanges) {
-    const targetRange = event.getTargetRanges()[0];
-
-    if (targetRange) {
-      selection.applyDOMRange(targetRange);
-    }
+function getTargetRange(event: InputEvent): null | StaticRange {
+  if (!event.getTargetRanges) {
+    return null;
   }
+  const targetRanges = event.getTargetRanges();
+  if (targetRanges.length === 0) {
+    return null;
+  }
+  return targetRanges[0];
 }
 
 function $canRemoveText(
@@ -436,6 +446,7 @@ function isPossiblyAndroidKeyPress(timeStamp: number): boolean {
 
 function onBeforeInput(event: InputEvent, editor: LexicalEditor): void {
   const inputType = event.inputType;
+  const targetRange = getTargetRange(event);
 
   // We let the browser do its own thing for composition.
   if (
@@ -516,9 +527,10 @@ function onBeforeInput(event: InputEvent, editor: LexicalEditor): void {
     if (
       (!selection.dirty || unprocessedBeforeInputData !== null) &&
       selection.isCollapsed() &&
-      !$isRootNode(selection.anchor.getNode())
+      !$isRootNode(selection.anchor.getNode()) &&
+      targetRange !== null
     ) {
-      $applyTargetRange(selection, event);
+      selection.applyDOMRange(targetRange);
     }
 
     unprocessedBeforeInputData = null;
@@ -544,6 +556,7 @@ function onBeforeInput(event: InputEvent, editor: LexicalEditor): void {
         data != null &&
         $shouldPreventDefaultAndInsertText(
           selection,
+          targetRange,
           data,
           event.timeStamp,
           true,
@@ -691,12 +704,14 @@ function onInput(event: InputEvent, editor: LexicalEditor): void {
   updateEditor(editor, () => {
     const selection = $getSelection();
     const data = event.data;
+    const targetRange = getTargetRange(event);
 
     if (
       data != null &&
       $isRangeSelection(selection) &&
       $shouldPreventDefaultAndInsertText(
         selection,
+        targetRange,
         data,
         event.timeStamp,
         false,
