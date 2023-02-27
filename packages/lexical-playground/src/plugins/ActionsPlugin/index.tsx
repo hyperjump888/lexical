@@ -302,7 +302,6 @@ function ShowBudgget({
 }): JSX.Element {
     return (
         <>
-            Hello..
             <div className="Modal__content">
                 <div className="TravelBudgetNode__container">
                     <div className="TravelBudgetNode__inner">
@@ -310,40 +309,46 @@ function ShowBudgget({
                             <div className="TravelBudgetNode__singlefieldContainer">
                                 <h2 className="TravelBudgetNode__heading">Title</h2>
                                 <div className="TravelBudgetNode__textInputWrapper"><input
-                                    className="TravelBudgetNode__optionInput"
+                                    className="TravelBudgetNode__optionInput TravelBudgetNode__title"
                                     type="text" placeholder="Visiting Disneyland"
                                     value=""></input>
                                 </div>
                             </div>
-                            <div className="TravelBudgetNode__singlefieldContainer">
-                                <h2 className="TravelBudgetNode__heading">Time</h2>
-                                <div className="TravelBudgetNode__textInputWrapper"><input
-                                    className="TravelBudgetNode__optionInput"
-                                    type="text" placeholder="10:00 AM" value=""></input>
+
+                        </div>
+                    </div>
+                    <div className="TravelBudgetNode__inner">
+                        <div className="TravelBudgetNode__fieldsContainer">
+                                <div className="TravelBudgetNode__singlefieldContainer">
+                                    <h2 className="TravelBudgetNode__heading">Currency</h2>
+                                    <div className="TravelBudgetNode__textInputWrapper"><select
+                                        className="TravelBudgetNode__optionInput"
+                                        name="currency" id="currency">
+                                        <option value="usd">USD</option>
+                                        <option value="sgd">SGD</option>
+                                        <option value="idr">IDR</option>
+                                        <option value="thb">THB</option>
+                                    </select></div>
                                 </div>
-                            </div>
-                            <div className="TravelBudgetNode__singlefieldContainer">
-                                <h2 className="TravelBudgetNode__heading">Currency</h2>
-                                <div className="TravelBudgetNode__textInputWrapper"><select
-                                    className="TravelBudgetNode__optionInput"
-                                    name="currency" id="currency">
-                                    <option value="usd">USD</option>
-                                    <option value="sgd">SGD</option>
-                                    <option value="idr">IDR</option>
-                                    <option value="thb">THB</option>
-                                </select></div>
-                            </div>
+
+
                             <div className="TravelBudgetNode__singlefieldContainer">
                                 <h2 className="TravelBudgetNode__heading">Amount</h2>
                                 <div className="TravelBudgetNode__textInputWrapper"><input
-                                    className="TravelBudgetNode__optionInput"
+                                    className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
                                     type="text" placeholder="1000" value=""></input>
                                 </div>
                             </div>
+
+                        </div>
+                    </div>
+
+                    <div className="TravelBudgetNode__inner">
+                        <div className="TravelBudgetNode__fieldsContainer">
                             <div className="TravelBudgetNode__singlefieldContainer">
                                 <h2 className="TravelBudgetNode__heading">Category</h2>
                                 <div className="TravelBudgetNode__textInputWrapper"><select
-                                    className="TravelBudgetNode__optionInput"
+                                    className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
                                     name="category" id="category">
                                     <option value="accommodation">Accommodation</option>
                                     <option value="transportation">Transportation</option>
@@ -353,8 +358,8 @@ function ShowBudgget({
                                     <option value="others">Others</option>
                                 </select></div>
                             </div>
-                        </div>
 
+                        </div>
                     </div>
 
                 </div>
