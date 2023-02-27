@@ -307,7 +307,6 @@ function ShowBudgget({
                     <div className="TravelBudgetNode__inner">
                         <div className="TravelBudgetNode__fieldsContainer">
                             <div className="TravelBudgetNode__singlefieldContainer">
-                                <h2 className="TravelBudgetNode__heading">Title</h2>
                                 <div className="TravelBudgetNode__textInputWrapper"><input
                                     className="TravelBudgetNode__optionInput TravelBudgetNode__title"
                                     type="text" placeholder="Visiting Disneyland"
@@ -320,7 +319,6 @@ function ShowBudgget({
                     <div className="TravelBudgetNode__inner">
                         <div className="TravelBudgetNode__fieldsContainer">
                                 <div className="TravelBudgetNode__singlefieldContainer">
-                                    <h2 className="TravelBudgetNode__heading">Currency</h2>
                                     <div className="TravelBudgetNode__textInputWrapper"><select
                                         className="TravelBudgetNode__optionInput"
                                         name="currency" id="currency">
@@ -333,7 +331,6 @@ function ShowBudgget({
 
 
                             <div className="TravelBudgetNode__singlefieldContainer">
-                                <h2 className="TravelBudgetNode__heading">Amount</h2>
                                 <div className="TravelBudgetNode__textInputWrapper"><input
                                     className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
                                     type="text" placeholder="1000" value=""></input>
@@ -346,7 +343,6 @@ function ShowBudgget({
                     <div className="TravelBudgetNode__inner">
                         <div className="TravelBudgetNode__fieldsContainer">
                             <div className="TravelBudgetNode__singlefieldContainer">
-                                <h2 className="TravelBudgetNode__heading">Category</h2>
                                 <div className="TravelBudgetNode__textInputWrapper"><select
                                     className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
                                     name="category" id="category">
