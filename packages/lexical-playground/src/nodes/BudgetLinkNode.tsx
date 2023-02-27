@@ -11,16 +11,13 @@ import type {
   DOMConversionOutput,
   DOMExportOutput,
   EditorConfig,
-  LexicalEditor,
   LexicalNode,
   NodeKey,
-  SerializedEditor,
-  SerializedLexicalNode,
   Spread,
 } from 'lexical';
 
-import {$applyNodeReplacement, createEditor} from 'lexical';
 import { LinkNode, SerializedLinkNode } from '@lexical/link';
+import {$applyNodeReplacement} from 'lexical';
 import * as React from 'react';
 import {Suspense} from 'react';
 
@@ -37,14 +34,25 @@ export interface BudgetLinkPayload {
   key?: NodeKey;
 }
 
-function convertImageElement(domNode: Node): null | DOMConversionOutput {
-  if (domNode instanceof HTMLImageElement) {
-    const {alt: altText, src, width, height} = domNode;
-    const node = $createBudgetLinkNode({altText, height, src, width});
-    return {node};
+function convertBudgetLinkElement(domNode: Node): null | DOMConversionOutput {
+  if (domNode instanceof HTMLAnchorElement) {
+    const datatype = domNode.getAttribute('data-type');
+    if (datatype === 'budgetlink') {
+      const url = domNode.getAttribute('href') as string;
+      const currency = domNode.getAttribute('currency') as string;
+      const amountStr = domNode.getAttribute('amount') as string;
+      const category = domNode.getAttribute('category') as string;
+
+      const amount = parseInt(amountStr);
+
+      const node = $createBudgetLinkNode({url, currency, amount, category});
+      return {node};
+    }
   }
   return null;
 }
+
+
 
 export type SerializedBudgetLinkNode = Spread<
   {
@@ -84,28 +92,23 @@ export class BudgetLinkNode extends LinkNode {
       amount,
       category,
     });
-    const nestedEditor = node.__caption;
-    const editorState = nestedEditor.parseEditorState(caption.editorState);
-    if (!editorState.isEmpty()) {
-      nestedEditor.setEditorState(editorState);
-    }
     return node;
   }
 
   exportDOM(): DOMExportOutput {
-    const element = document.createElement('img');
-    element.setAttribute('src', this.__src);
-    element.setAttribute('alt', this.__altText);
-    element.setAttribute('width', this.__width.toString());
-    element.setAttribute('height', this.__height.toString());
+    const element = document.createElement('a');
+    element.setAttribute('href',this.__url);
+    element.setAttribute('data-type','budgetlink');
+    element.setAttribute('data-currency',this.__currency);
+    element.setAttribute('data-amount',this.__amount.toString());
+    element.setAttribute('data-category',this.__category);
     return {element};
   }
 
   static importDOM(): DOMConversionMap | null {
-    returimport { LinkNode } from '@lexical/link';
-n {
-      img: (node: Node) => ({
-        conversion: convertImageElement,
+    return {
+      a: (node: Node) => ({
+        conversion: convertBudgetLinkElement,
         priority: 0,
       }),
     };
