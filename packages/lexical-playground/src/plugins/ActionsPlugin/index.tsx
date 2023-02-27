@@ -242,6 +242,18 @@ export default function ActionsPlugin({
           <i className={connected ? 'disconnect' : 'connect'} />
         </button>
       )}
+        <button
+            className="action-button html"
+            onClick={() => {
+                // Send modal poput
+                showModal('Show Budget', (onClose) => (
+                    <ShowBudgget editor={editor} onClose={onClose} />
+                ));
+            }}
+            title="Read-Only Mode"
+            aria-label={`${!isEditable ? 'Budgeting' : 'Budgeting'}`}>
+            <i className={!isEditable ? 'user' : 'user'} />
+        </button>
       {modal}
     </div>
   );
@@ -276,4 +288,95 @@ function ShowClearDialog({
       </div>
     </>
   );
+}
+
+
+
+
+function ShowBudgget({
+                             editor,
+                             onClose,
+                         }: {
+    editor: LexicalEditor;
+    onClose: () => void;
+}): JSX.Element {
+    return (
+        <>
+            Hello..
+            <div className="Modal__content">
+                <div className="TravelBudgetNode__container">
+                    <div className="TravelBudgetNode__inner">
+                        <div className="TravelBudgetNode__fieldsContainer">
+                            <div className="TravelBudgetNode__singlefieldContainer">
+                                <h2 className="TravelBudgetNode__heading">Title</h2>
+                                <div className="TravelBudgetNode__textInputWrapper"><input
+                                    className="TravelBudgetNode__optionInput"
+                                    type="text" placeholder="Visiting Disneyland"
+                                    value=""></input>
+                                </div>
+                            </div>
+                            <div className="TravelBudgetNode__singlefieldContainer">
+                                <h2 className="TravelBudgetNode__heading">Time</h2>
+                                <div className="TravelBudgetNode__textInputWrapper"><input
+                                    className="TravelBudgetNode__optionInput"
+                                    type="text" placeholder="10:00 AM" value=""></input>
+                                </div>
+                            </div>
+                            <div className="TravelBudgetNode__singlefieldContainer">
+                                <h2 className="TravelBudgetNode__heading">Currency</h2>
+                                <div className="TravelBudgetNode__textInputWrapper"><select
+                                    className="TravelBudgetNode__optionInput"
+                                    name="currency" id="currency">
+                                    <option value="usd">USD</option>
+                                    <option value="sgd">SGD</option>
+                                    <option value="idr">IDR</option>
+                                    <option value="thb">THB</option>
+                                </select></div>
+                            </div>
+                            <div className="TravelBudgetNode__singlefieldContainer">
+                                <h2 className="TravelBudgetNode__heading">Amount</h2>
+                                <div className="TravelBudgetNode__textInputWrapper"><input
+                                    className="TravelBudgetNode__optionInput"
+                                    type="text" placeholder="1000" value=""></input>
+                                </div>
+                            </div>
+                            <div className="TravelBudgetNode__singlefieldContainer">
+                                <h2 className="TravelBudgetNode__heading">Category</h2>
+                                <div className="TravelBudgetNode__textInputWrapper"><select
+                                    className="TravelBudgetNode__optionInput"
+                                    name="category" id="category">
+                                    <option value="accommodation">Accommodation</option>
+                                    <option value="transportation">Transportation</option>
+                                    <option value="food">Food</option>
+                                    <option value="entertainment">Entertainment</option>
+                                    <option value="tour">Tour</option>
+                                    <option value="others">Others</option>
+                                </select></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <Button
+                    onClick={() => {
+                    editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
+                    editor.focus();
+                    onClose();
+                }}>
+                    Confirm
+                </Button>{' '}
+                <Button
+                    onClick={() => {
+                        editor.focus();
+                        onClose();
+                    }}>
+                    Cancel
+                </Button>
+            </div>
+        </>
+    );
 }
