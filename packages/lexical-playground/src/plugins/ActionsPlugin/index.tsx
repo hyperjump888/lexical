@@ -16,12 +16,15 @@ import {
 } from '@lexical/markdown';
 import {useCollaborationContext} from '@lexical/react/LexicalCollaborationContext';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {mergeRegister} from '@lexical/utils';
+import {$insertNodeToNearestRoot, mergeRegister} from '@lexical/utils';
 import {CONNECTED_COMMAND, TOGGLE_CONNECT_COMMAND} from '@lexical/yjs';
 import {
   $createTextNode,
   $getRoot,
   $isParagraphNode,
+    TextNode,
+    $getSelection,
+    $createParagraphNode,
   CLEAR_EDITOR_COMMAND,
   COMMAND_PRIORITY_EDITOR,
 } from 'lexical';
@@ -35,6 +38,8 @@ import {
   SPEECH_TO_TEXT_COMMAND,
   SUPPORT_SPEECH_RECOGNITION,
 } from '../SpeechToTextPlugin';
+import TextInput from "../../ui/TextInput";
+import {$createTextLink, InputForText} from './../TextLinkPlugin';
 
 async function sendEditorState(editor: LexicalEditor): Promise<void> {
   const stringifiedEditorState = JSON.stringify(editor.getEditorState());
@@ -86,6 +91,8 @@ export default function ActionsPlugin({
   const [isEditorEmpty, setIsEditorEmpty] = useState(true);
   const [modal, showModal] = useModal();
   const {isCollabActive} = useCollaborationContext();
+  const [title, setTitle] = useState('https://disneyland.disney.go.com/destinations/disneyland');
+  const [amount, setAmount] = useState(100);
 
   useEffect(() => {
     return mergeRegister(
@@ -247,7 +254,7 @@ export default function ActionsPlugin({
             onClick={() => {
                 // Send modal poput
                 showModal('Show Budget', (onClose) => (
-                    <ShowBudgget editor={editor} onClose={onClose} />
+                    <ShowBudgget editor={editor} onClose={onClose} title={title} amount={amount} />
                 ));
             }}
             title="Read-Only Mode"
@@ -296,6 +303,8 @@ function ShowClearDialog({
 function ShowBudgget({
                              editor,
                              onClose,
+                         title,
+                         amount
                          }: {
     editor: LexicalEditor;
     onClose: () => void;
@@ -307,10 +316,8 @@ function ShowBudgget({
                     <div className="TravelBudgetNode__inner">
                         <div className="TravelBudgetNode__fieldsContainer">
                             <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper"><input
-                                    className="TravelBudgetNode__optionInput TravelBudgetNode__title"
-                                    type="text" placeholder="Visiting Disneyland"
-                                    value=""></input>
+                                <div className="TravelBudgetNode__textInputWrapper">
+                                    <InputForText value={title} className="TravelBudgetNode__optionInput TravelBudgetNode__title" placeholder={title} />
                                 </div>
                             </div>
 
@@ -331,9 +338,8 @@ function ShowBudgget({
 
 
                             <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper"><input
-                                    className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
-                                    type="text" placeholder="1000" value=""></input>
+                                <div className="TravelBudgetNode__textInputWrapper">
+                                    <InputForText value={amount} className="TravelBudgetNode__optionInput TravelBudgetNode__amount" placeholder={amount} />
                                 </div>
                             </div>
 
@@ -357,15 +363,17 @@ function ShowBudgget({
 
                         </div>
                     </div>
-
                 </div>
-
 
 
                 <Button
                     onClick={() => {
-                    editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
-                    editor.focus();
+                        editor.update( async () => {
+                            const myElement = $createTextLink(title);
+                            const root = $getRoot();
+                            root.append(myElement);
+                        });
+                        editor.focus();
                     onClose();
                 }}>
                     Confirm
