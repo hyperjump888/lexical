@@ -27,11 +27,11 @@ const ImageComponent = React.lazy(
 );
 
 export interface BudgetLinkPayload {
-  url: string;
-  currency: string;
   amount: number;
-  category: string;
+  category: string;  
+  currency: string;
   key?: NodeKey;
+  url: string;  
 }
 
 function convertBudgetLinkElement(domNode: Node): null | DOMConversionOutput {
@@ -43,7 +43,7 @@ function convertBudgetLinkElement(domNode: Node): null | DOMConversionOutput {
       const amountStr = domNode.getAttribute('amount') as string;
       const category = domNode.getAttribute('category') as string;
 
-      const amount = parseInt(amountStr);
+      const amount = parseInt(amountStr,10);
 
       const node = $createBudgetLinkNode({url, currency, amount, category});
       return {node};
@@ -87,10 +87,10 @@ export class BudgetLinkNode extends LinkNode {
     const {url, currency, amount, category} =
       serializedNode;
     const node = $createBudgetLinkNode({
-      url,
-      currency,
       amount,
       category,
+      currency,
+      url,
     });
     return node;
   }
@@ -130,9 +130,9 @@ export class BudgetLinkNode extends LinkNode {
   exportJSON(): SerializedBudgetLinkNode {
     return {
       ...super.exportJSON(),
-      currency: this.getCurrency(),
       amount: this.getAmount(),
       category: this.getCategory(),
+      currency: this.getCurrency(),
       type: 'budgetlink',
       version: 1,
     };
@@ -153,15 +153,20 @@ export class BudgetLinkNode extends LinkNode {
   }
 
   // View
-
-  createDOM(config: EditorConfig): HTMLElement {
-    const span = document.createElement('span');
-    const theme = config.theme;
-    const className = theme.image;
-    if (className !== undefined) {
-      span.className = className;
+  createDOM(config: EditorConfig): HTMLAnchorElement {
+    const element = document.createElement('a');
+    element.href = this.__url;
+    if (this.__target !== null) {
+      element.target = this.__target;
     }
-    return span;
+    if (this.__rel !== null) {
+      element.rel = this.__rel;
+    }
+    element.setAttribute('data-type','budgetlink');
+    element.setAttribute('data-currency',this.__currency);
+    element.setAttribute('data-amount',this.__amount.toString());
+    element.setAttribute('data-category',this.__category);
+    return element;
   }
 
   updateDOM(): false {
@@ -201,11 +206,11 @@ export class BudgetLinkNode extends LinkNode {
 }
 
 export function $createBudgetLinkNode({
-  url,
-  currency,
   amount,
   category,
+  currency,
   key,
+  url,  
 }: BudgetLinkPayload): BudgetLinkNode {
   return $applyNodeReplacement(
     new BudgetLinkNode(
