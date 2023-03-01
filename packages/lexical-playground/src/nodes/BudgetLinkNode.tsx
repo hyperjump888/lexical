@@ -45,7 +45,7 @@ function convertBudgetLinkElement(domNode: Node): null | DOMConversionOutput {
 
       const amount = parseInt(amountStr,10);
 
-      const node = $createBudgetLinkNode({url, currency, amount, category});
+      const node = $createBudgetLinkNode({amount, category, currency, url});
       return {node};
     }
   }
