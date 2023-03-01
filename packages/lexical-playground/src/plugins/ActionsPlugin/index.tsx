@@ -370,14 +370,13 @@ function ShowBudgget({
 
                 <Button
                     onClick={() => {
-                        editor.update(async () => {
+                        editor.update( () => {
                             const rel = `${curr},${amount},${category}`;
                             const myElement = $createTextLink(title, rel);
-                            //const selection = $getSelection();
-                            //console.log(JSON.stringify(curr) + 'onclick blbalblab');
-                            //selection.insertNodes([myElement]);
                             const root = $getRoot();
-                            root.append(myElement);
+                            const paragraphNode = $createParagraphNode();
+                            paragraphNode.append(myElement)
+                            root.append(paragraphNode);
                         });
                         editor.focus();
                         onClose();
