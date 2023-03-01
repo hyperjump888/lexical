@@ -91,9 +91,6 @@ export default function ActionsPlugin({
     const [isEditorEmpty, setIsEditorEmpty] = useState(true);
     const [modal, showModal] = useModal();
     const {isCollabActive} = useCollaborationContext();
-    const [title, setTitle] = useState('https://disneyland.disney.go.com/destinations/disneyland');
-    const [amount, setAmount] = useState(100);
-
     useEffect(() => {
         return mergeRegister(
             editor.registerEditableListener((editable) => {
@@ -254,7 +251,7 @@ export default function ActionsPlugin({
                 onClick={() => {
                     // Send modal poput
                     showModal('Show Budget', (onClose) => (
-                        <ShowBudgget editor={editor} onClose={onClose} title={title} amount={amount}/>
+                        <ShowBudgget editor={editor} onClose={onClose} />
                     ));
                 }}
                 title="Read-Only Mode"
@@ -273,6 +270,8 @@ function ShowClearDialog({
     editor: LexicalEditor;
     onClose: () => void;
 }): JSX.Element {
+
+
     return (
         <>
             Are you sure you want to clear the editor?
@@ -300,12 +299,16 @@ function ShowClearDialog({
 
 function ShowBudgget({
                          editor,
-                         onClose,
-                         title, amount
-                     }: {
+                         onClose
+}: {
     editor: LexicalEditor;
     onClose: () => void;
 }): JSX.Element {
+    const [title, setTitle] = useState('https://disneyland.disney.go.com/destinations/disneyland');
+    const [amount, setAmount] = useState(100);
+    const [curr, setCurr] = useState('idr');
+    const [category, setCategory] = useState('transportation');
+
     return (
         <>
             <div className="Modal__content">
@@ -314,11 +317,8 @@ function ShowBudgget({
                         <div className="TravelBudgetNode__fieldsContainer">
                             <div className="TravelBudgetNode__singlefieldContainer">
                                 <div className="TravelBudgetNode__textInputWrapper">
-                                    <InputForText value={title}
-                                                  className="TravelBudgetNode__optionInput TravelBudgetNode__title"
-                                                  placeholder={title} onChange={(event) => {
-                                        console.log(event.target);
-                                    }}/>
+                                    <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__title"
+                                                  placeholder={title} value={title} onChange={setTitle} />
                                 </div>
                             </div>
 
@@ -327,7 +327,7 @@ function ShowBudgget({
                     <div className="TravelBudgetNode__inner">
                         <div className="TravelBudgetNode__fieldsContainer">
                             <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper"><select
+                                <div className="TravelBudgetNode__textInputWrapper"><select defaultValue={curr} onChange={e => setCurr(e.target.value)}
                                     className="TravelBudgetNode__optionInput"
                                     name="currency" id="currency">
                                     <option value="usd">USD</option>
@@ -340,22 +340,19 @@ function ShowBudgget({
 
                             <div className="TravelBudgetNode__singlefieldContainer">
                                 <div className="TravelBudgetNode__textInputWrapper">
-                                    <InputForText value={amount}
-                                                  className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
-                                                  placeholder={amount}  onChange={(event) => {
-                                        console.log(event.target);
-                                    }}/>
+                                    <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
+                                                  placeholder={amount} value={amount} onChange={setAmount} />
                                 </div>
                             </div>
-
                         </div>
                     </div>
 
                     <div className="TravelBudgetNode__inner">
                         <div className="TravelBudgetNode__fieldsContainer">
                             <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper"><select
-                                    className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
+                                <div className="TravelBudgetNode__textInputWrapper">
+                                    <select defaultValue={category} onChange={e => setCategory(e.target.value)}
+                                            className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
                                     name="category" id="category">
                                     <option value="accommodation">Accommodation</option>
                                     <option value="transportation">Transportation</option>
@@ -374,7 +371,11 @@ function ShowBudgget({
                 <Button
                     onClick={() => {
                         editor.update(async () => {
-                            const myElement = $createTextLink(title);
+                            const rel = `${curr},${amount},${category}`;
+                            const myElement = $createTextLink(title, rel);
+                            //const selection = $getSelection();
+                            //console.log(JSON.stringify(curr) + 'onclick blbalblab');
+                            //selection.insertNodes([myElement]);
                             const root = $getRoot();
                             root.append(myElement);
                         });

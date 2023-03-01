@@ -119,11 +119,11 @@ export function $createTextLinkNode(urlID: string, txt: string): LinkNode {
 }
 
 
-export function $createTextLink(text: string): LinkNode {
+export function $createTextLink(text: string, rel: string): LinkNode {
     // create link node here and then append the text node
     const myUrl = new URL(text);
     const txtForUrl = getLinkText(myUrl);
-    const textNode = new LinkNode(text);
+    const textNode = new LinkNode(text,{ rel : rel});
     const txtwithinNode = new TextNode(txtForUrl);
     textNode.append(txtwithinNode);
     return textNode
@@ -234,6 +234,7 @@ export function InputForText({
         />
     );
 }
+
 
 class CustomLinkNode extends LinkNode {
     __target: '_blank' | '_self';
