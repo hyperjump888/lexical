@@ -8,6 +8,10 @@
 
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {useLexicalNodeSelection} from '@lexical/react/useLexicalNodeSelection';
+import {$createTextLink, InputForText} from './../plugins/TextLinkPlugin';
+import Button from './../ui/Button';
+import useModal from './../hooks/useModal';
+
 import {
   $applyNodeReplacement,
   $getNodeByKey,
@@ -30,7 +34,7 @@ import {
 } from 'lexical';
 import {mergeRegister} from 'packages/lexical-utils/src';
 import * as React from 'react';
-import {Suspense,useCallback, useEffect} from 'react';
+import {Suspense,useCallback, useEffect, useState } from 'react';
 
 export type Options = ReadonlyArray<Option>;
 
@@ -243,6 +247,11 @@ function TravelBudgetComponent({nodeKey}: {nodeKey: NodeKey}) {
   const [editor] = useLexicalComposerContext();
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
+  const [title, setTitle] = useState('https://disneyland.disney.go.com/destinations/disneyland');
+  const [amount, setAmount] = useState(100);
+  const [curr, setCurr] = useState('idr');
+  const [category, setCategory] = useState('transportation');
+
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -300,75 +309,84 @@ function TravelBudgetComponent({nodeKey}: {nodeKey: NodeKey}) {
   }, [editor, isSelected, nodeKey]);
 
   return (
-    <div className="TravelBudgetNode__container">
-      <div className="TravelBudgetNode__inner">
-        <div className="TravelBudgetNode__fieldsContainer">
-          <div className="TravelBudgetNode__singlefieldContainer">
-            <h2 className="TravelBudgetNode__heading">Title</h2>
-            <div className="TravelBudgetNode__textInputWrapper">
-              <input
-                className="TravelBudgetNode__optionInput"
-                type="text"
-                placeholder="Visiting Disneyland"
-                value=""
-              />
+    <div className="Modal__content">
+                <div className="TravelBudgetNode__container">
+                    <div className="TravelBudgetNode__inner">
+                        <div className="TravelBudgetNode__fieldsContainer">
+                            <div className="TravelBudgetNode__singlefieldContainer">
+                                <div className="TravelBudgetNode__textInputWrapper">
+                                    <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__title"
+                                                  placeholder={title} value={title} onChange={setTitle} />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div className="TravelBudgetNode__inner">
+                        <div className="TravelBudgetNode__fieldsContainer">
+                            <div className="TravelBudgetNode__singlefieldContainer">
+                                <div className="TravelBudgetNode__textInputWrapper"><select defaultValue={curr} onChange={e => setCurr(e.target.value)}
+                                    className="TravelBudgetNode__optionInput"
+                                    name="currency" id="currency">
+                                    <option value="usd">USD</option>
+                                    <option value="sgd">SGD</option>
+                                    <option value="idr">IDR</option>
+                                    <option value="thb">THB</option>
+                                </select></div>
+                            </div>
+
+
+                            <div className="TravelBudgetNode__singlefieldContainer">
+                                <div className="TravelBudgetNode__textInputWrapper">
+                                    <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
+                                                  placeholder={"amount"} value={amount} onChange={setAmount} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="TravelBudgetNode__inner">
+                        <div className="TravelBudgetNode__fieldsContainer">
+                            <div className="TravelBudgetNode__singlefieldContainer">
+                                <div className="TravelBudgetNode__textInputWrapper">
+                                    <select defaultValue={category} onChange={e => setCategory(e.target.value)}
+                                            className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
+                                    name="category" id="category">
+                                    <option value="accommodation">Accommodation</option>
+                                    <option value="transportation">Transportation</option>
+                                    <option value="food">Food</option>
+                                    <option value="entertainment">Entertainment</option>
+                                    <option value="tour">Tour</option>
+                                    <option value="others">Others</option>
+                                </select></div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <Button
+                    onClick={() => {
+                        editor.update( () => {
+                            const rel = `${curr},${amount},${category}`;
+                            const myElement = $createTextLink(title, rel);
+                            console.log(rel);
+          
+                        });
+                        editor.focus();
+                        /* onClose(); */
+                    }}>
+                    Confirm
+                </Button>{' '}
+                <Button
+                    onClick={() => {
+                        editor.focus();
+/*                         onClose();
+ */                    }}>
+                    Cancel
+                </Button>
             </div>
-          </div>
-          <div className="TravelBudgetNode__singlefieldContainer">
-            <h2 className="TravelBudgetNode__heading">Time</h2>
-            <div className="TravelBudgetNode__textInputWrapper">
-              <input
-                className="TravelBudgetNode__optionInput"
-                type="text"
-                placeholder="10:00 AM"
-                value=""
-              />
-            </div>
-          </div>
-          <div className="TravelBudgetNode__singlefieldContainer">
-            <h2 className="TravelBudgetNode__heading">Currency</h2>
-            <div className="TravelBudgetNode__textInputWrapper">
-              <select
-                className="TravelBudgetNode__optionInput"
-                name="currency"
-                id="currency">
-                <option value="usd">USD</option>
-                <option value="sgd">SGD</option>
-                <option value="idr">IDR</option>
-                <option value="thb">THB</option>
-              </select>
-            </div>
-          </div>
-          <div className="TravelBudgetNode__singlefieldContainer">
-            <h2 className="TravelBudgetNode__heading">Amount</h2>
-            <div className="TravelBudgetNode__textInputWrapper">
-              <input
-                className="TravelBudgetNode__optionInput"
-                type="text"
-                placeholder="1000"
-                value=""
-              />
-            </div>
-          </div>
-          <div className="TravelBudgetNode__singlefieldContainer">
-            <h2 className="TravelBudgetNode__heading">Category</h2>
-            <div className="TravelBudgetNode__textInputWrapper">
-              <select
-                className="TravelBudgetNode__optionInput"
-                name="category"
-                id="category">
-                <option value="accommodation">Accommodation</option>
-                <option value="transportation">Transportation</option>
-                <option value="food">Food</option>
-                <option value="entertainment">Entertainment</option>
-                <option value="tour">Tour</option>
-                <option value="others">Others</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
 

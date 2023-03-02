@@ -211,9 +211,9 @@ export default function TextLinkPlugin(): JSX.Element | null {
 type Props = Readonly<{
     'data-test-id'?: string;
     className: string,
-    onChange: (val: string) => void;
-    placeholder?: string;
-    value: string;
+    onChange: (val: any) => void;
+    placeholder?: any;
+    value: any;
 }>;
 
 export function InputForText({
