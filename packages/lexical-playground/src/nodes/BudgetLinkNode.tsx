@@ -20,6 +20,10 @@ import { LinkNode, SerializedLinkNode } from '@lexical/link';
 import {$applyNodeReplacement} from 'lexical';
 import * as React from 'react';
 import {Suspense} from 'react';
+import {useState} from "react";
+import {InputForText} from "../plugins/TextLinkPlugin";
+import Button from "../ui/Button";
+import {getCategories, getCurrencies} from "./TravelBudgetNode";
 
 const ImageComponent = React.lazy(
   // @ts-ignore
@@ -28,10 +32,10 @@ const ImageComponent = React.lazy(
 
 export interface BudgetLinkPayload {
   amount: number;
-  category: string;  
+  category: string;
   currency: string;
   key?: NodeKey;
-  url: string;  
+  url: string;
 }
 
 function convertBudgetLinkElement(domNode: Node): null | DOMConversionOutput {
@@ -186,22 +190,76 @@ export class BudgetLinkNode extends LinkNode {
   }
 
   decorate(): JSX.Element {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [title, setTitle] = useState('https://disneyland.disney.go.com/destinations/disneyland');
+    const [amount, setAmount] = useState(100);
+    const [curr, setCurr] = useState('idr');
+    const [category, setCategory] = useState('transportation');
+
     return (
-      <Suspense fallback={null}>
-        <ImageComponent
-          src={this.__src}
-          altText={this.__altText}
-          width={this.__width}
-          height={this.__height}
-          maxWidth={this.__maxWidth}
-          nodeKey={this.getKey()}
-          showCaption={this.__showCaption}
-          caption={this.__caption}
-          captionsEnabled={this.__captionsEnabled}
-          resizable={true}
-        />
-      </Suspense>
+        <div className="Modal__content">
+          <div className="TravelBudgetNode__container">
+            <div className="TravelBudgetNode__inner">
+              <div className="TravelBudgetNode__fieldsContainer">
+                <div className="TravelBudgetNode__singlefieldContainer">
+                  <div className="TravelBudgetNode__textInputWrapper">
+                    <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__title"
+                                  placeholder={title} value={title} onChange={setTitle} />
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div className="TravelBudgetNode__inner">
+              <div className="TravelBudgetNode__fieldsContainer">
+                <div className="TravelBudgetNode__singlefieldContainer">
+                  <div className="TravelBudgetNode__textInputWrapper"><select defaultValue={curr} onChange={e => setCurr(e.target.value)}
+                                                                              className="TravelBudgetNode__optionInput"
+                                                                              name="currency" id="currency">
+                    {this.getCurrency()}
+                  </select></div>
+                </div>
+
+
+                <div className="TravelBudgetNode__singlefieldContainer">
+                  <div className="TravelBudgetNode__textInputWrapper">
+                    <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
+                                  placeholder={'amount'} value={amount} onChange={setAmount} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="TravelBudgetNode__inner">
+              <div className="TravelBudgetNode__fieldsContainer">
+                <div className="TravelBudgetNode__singlefieldContainer">
+                  <div className="TravelBudgetNode__textInputWrapper">
+                    <select defaultValue={category} onChange={e => setCategory(e.target.value)}
+                            className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
+                            name="category" id="category">
+                      {this.getCategory()}
+                    </select></div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <Button
+              onClick={() => {
+
+              }}>
+            Confirm
+          </Button>{' '}
+          <Button
+              onClick={() => {
+
+              }}>
+            Cancel
+          </Button>
+        </div>
     );
+
   }
 }
 
@@ -210,7 +268,7 @@ export function $createBudgetLinkNode({
   category,
   currency,
   key,
-  url,  
+  url,
 }: BudgetLinkPayload): BudgetLinkNode {
   return $applyNodeReplacement(
     new BudgetLinkNode(

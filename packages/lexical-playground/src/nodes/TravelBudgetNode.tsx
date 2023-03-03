@@ -13,8 +13,8 @@ import Button from './../ui/Button';
 import useModal from './../hooks/useModal';
 
 import {
-  $applyNodeReplacement,
-  $getNodeByKey,
+  $applyNodeReplacement, $createParagraphNode,
+  $getNodeByKey, $getRoot,
   $getSelection,
   $isNodeSelection,
   CLICK_COMMAND,
@@ -34,7 +34,7 @@ import {
 } from 'lexical';
 import * as React from 'react';
 import {Suspense,useCallback, useEffect, useState } from 'react';
-import {BudgetLinkNode} from "./BudgetLinkNode";
+import {$createBudgetLinkNode, BudgetLinkNode} from "./BudgetLinkNode";
 import {INSERT_TABLE_COMMAND} from "@lexical/table";
 import TextInput from "../ui/TextInput";
 import {DialogActions} from "../ui/Dialog";
@@ -384,6 +384,7 @@ function TravelBudgetComponent({nodeKey}: {nodeKey: NodeKey}) {
                             console.log(rel);*/
 
                           //const budget = new BudgetLinkNode();
+
                         });
                         editor.focus();
                     }}>
@@ -466,11 +467,19 @@ export function InsertBudget({
         <Button
             onClick={() => {
               editor.update( () => {
-                /* const rel = `${curr},${amount},${category}`;
-                 const myElement = $createTextLink(title, rel);
-                 console.log(rel);*/
-
-                //const budget = new BudgetLinkNode();
+                /*
+                const elBudget =$createBudgetLinkNode({
+                  amount:amount,
+                  category:category,
+                  currency:curr,
+                  url:title
+                });
+                const root = $getRoot();
+                const paragraphNode = $createParagraphNode();
+                paragraphNode.append(elBudget);
+                // Finally, append the paragraph to the root
+                root.append(paragraphNode);
+                */
               });
               editor.focus();
               onClose();
