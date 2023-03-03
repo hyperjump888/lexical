@@ -19,12 +19,12 @@ import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {useMemo, useState} from 'react';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import {INSERT_TEXTLINK_COMMAND} from '../TextLinkPlugin';
 
 import useModal from '../../hooks/useModal';
 import Button from '../../ui/Button';
 import {DialogActions} from '../../ui/Dialog';
 import {INSERT_FIGMA_COMMAND} from '../FigmaPlugin';
+import {INSERT_TEXTLINK_COMMAND} from '../TextLinkPlugin';
 import {INSERT_TWEET_COMMAND} from '../TwitterPlugin';
 import {INSERT_YOUTUBE_COMMAND} from '../YouTubePlugin';
 

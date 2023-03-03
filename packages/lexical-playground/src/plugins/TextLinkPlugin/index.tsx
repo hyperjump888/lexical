@@ -8,6 +8,7 @@
 
 import {LinkNode} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
+import {Props} from '@lexical/react/LexicalContentEditable';
 import {mergeRegister} from '@lexical/utils';
 import {
     $createParagraphNode,
@@ -21,7 +22,6 @@ import {
     TextNode
 } from 'lexical';
 import {default as React, FC, useEffect} from 'react';
-import {Props} from "@lexical/react/LexicalContentEditable";
 
 export const INSERT_TEXTLINK_COMMAND: LexicalCommand<string> = createCommand(
     'INSERT_TEXTLINK_COMMAND',
@@ -171,7 +171,7 @@ export default function TextLinkPlugin(): JSX.Element | null {
                                 } else {
                                     const paragraphNode = $createParagraphNode();
                                     paragraphNode.append(textLinkNode)
-                                    root.append(paragraphNode);
+                                    selection.insertNodes([paragraphNode]);
                                 }
                                 return true;
                             } catch (error) {
