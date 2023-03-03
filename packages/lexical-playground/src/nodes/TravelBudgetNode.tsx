@@ -35,6 +35,7 @@ import {
 import {mergeRegister} from 'packages/lexical-utils/src';
 import * as React from 'react';
 import {Suspense,useCallback, useEffect, useState } from 'react';
+import {BudgetLinkNode} from "./BudgetLinkNode";
 
 export type Options = ReadonlyArray<Option>;
 
@@ -211,9 +212,23 @@ const currencyList: {code: string; name: string}[] = [
   {code: 'ZAR', name: 'South African Rand'},
   {code: 'ZMK', name: 'Zambian Kwacha'},
 ];
-
 // list of categories ['Accommodation','Transportation'] in array format
-const categories: string[] = ['Accommodation', 'Transportation'];
+const categories: string[] = ['Accommodation', 'Transportation','Food','Entertainment','Other'];
+
+export function getCurrencies() {
+  return currencyList.map((curr) => {
+    return (<option value={curr.code}>{curr.name}
+    </option>);
+  });
+}
+
+export function getCategories() {
+  return categories.map((category) => {
+    return (<option value={category}>{category}
+    </option>);
+  });
+}
+
 
 function createUID(): string {
   return Math.random()
@@ -328,10 +343,7 @@ function TravelBudgetComponent({nodeKey}: {nodeKey: NodeKey}) {
                                 <div className="TravelBudgetNode__textInputWrapper"><select defaultValue={curr} onChange={e => setCurr(e.target.value)}
                                     className="TravelBudgetNode__optionInput"
                                     name="currency" id="currency">
-                                    <option value="usd">USD</option>
-                                    <option value="sgd">SGD</option>
-                                    <option value="idr">IDR</option>
-                                    <option value="thb">THB</option>
+                                  {getCurrencies()}
                                 </select></div>
                             </div>
 
@@ -339,7 +351,7 @@ function TravelBudgetComponent({nodeKey}: {nodeKey: NodeKey}) {
                             <div className="TravelBudgetNode__singlefieldContainer">
                                 <div className="TravelBudgetNode__textInputWrapper">
                                     <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
-                                                  placeholder={"amount"} value={amount} onChange={setAmount} />
+                                                  placeholder={'amount'} value={amount} onChange={setAmount} />
                                 </div>
                             </div>
                         </div>
@@ -352,12 +364,7 @@ function TravelBudgetComponent({nodeKey}: {nodeKey: NodeKey}) {
                                     <select defaultValue={category} onChange={e => setCategory(e.target.value)}
                                             className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
                                     name="category" id="category">
-                                    <option value="accommodation">Accommodation</option>
-                                    <option value="transportation">Transportation</option>
-                                    <option value="food">Food</option>
-                                    <option value="entertainment">Entertainment</option>
-                                    <option value="tour">Tour</option>
-                                    <option value="others">Others</option>
+                                      {getCategories()}
                                 </select></div>
                             </div>
 
@@ -369,21 +376,20 @@ function TravelBudgetComponent({nodeKey}: {nodeKey: NodeKey}) {
                 <Button
                     onClick={() => {
                         editor.update( () => {
-                            const rel = `${curr},${amount},${category}`;
+                           /* const rel = `${curr},${amount},${category}`;
                             const myElement = $createTextLink(title, rel);
-                            console.log(rel);
-          
+                            console.log(rel);*/
+
+                          //const budget = new BudgetLinkNode();
                         });
                         editor.focus();
-                        /* onClose(); */
                     }}>
                     Confirm
                 </Button>{' '}
                 <Button
                     onClick={() => {
                         editor.focus();
-/*                         onClose();
- */                    }}>
+                    }}>
                     Cancel
                 </Button>
             </div>
