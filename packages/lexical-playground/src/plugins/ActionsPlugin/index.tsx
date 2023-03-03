@@ -16,15 +16,12 @@ import {
 } from '@lexical/markdown';
 import {useCollaborationContext} from '@lexical/react/LexicalCollaborationContext';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {$insertNodeToNearestRoot, mergeRegister} from '@lexical/utils';
+import {mergeRegister} from '@lexical/utils';
 import {CONNECTED_COMMAND, TOGGLE_CONNECT_COMMAND} from '@lexical/yjs';
 import {
     $createTextNode,
     $getRoot,
     $isParagraphNode,
-    TextNode,
-    $getSelection,
-    $createParagraphNode,
     CLEAR_EDITOR_COMMAND,
     COMMAND_PRIORITY_EDITOR,
 } from 'lexical';
@@ -38,8 +35,6 @@ import {
     SPEECH_TO_TEXT_COMMAND,
     SUPPORT_SPEECH_RECOGNITION,
 } from '../SpeechToTextPlugin';
-import TextInput from "../../ui/TextInput";
-import {$createTextLink, InputForText} from './../TextLinkPlugin';
 
 async function sendEditorState(editor: LexicalEditor): Promise<void> {
     const stringifiedEditorState = JSON.stringify(editor.getEditorState());
@@ -91,6 +86,7 @@ export default function ActionsPlugin({
     const [isEditorEmpty, setIsEditorEmpty] = useState(true);
     const [modal, showModal] = useModal();
     const {isCollabActive} = useCollaborationContext();
+
     useEffect(() => {
         return mergeRegister(
             editor.registerEditableListener((editable) => {
@@ -177,7 +173,7 @@ export default function ActionsPlugin({
                     aria-label={`${
                         isSpeechToText ? 'Enable' : 'Disable'
                     } speech to text`}>
-                    <i className="mic"/>
+                    <i className="mic" />
                 </button>
             )}
             <button
@@ -185,7 +181,7 @@ export default function ActionsPlugin({
                 onClick={() => importFile(editor)}
                 title="Import"
                 aria-label="Import editor state from JSON">
-                <i className="import"/>
+                <i className="import" />
             </button>
             <button
                 className="action-button export"
@@ -197,19 +193,19 @@ export default function ActionsPlugin({
                 }
                 title="Export"
                 aria-label="Export editor state to JSON">
-                <i className="export"/>
+                <i className="export" />
             </button>
             <button
                 className="action-button clear"
                 disabled={isEditorEmpty}
                 onClick={() => {
                     showModal('Clear editor', (onClose) => (
-                        <ShowClearDialog editor={editor} onClose={onClose}/>
+                        <ShowClearDialog editor={editor} onClose={onClose} />
                     ));
                 }}
                 title="Clear"
                 aria-label="Clear editor contents">
-                <i className="clear"/>
+                <i className="clear" />
             </button>
             <button
                 className={`action-button ${!isEditable ? 'unlock' : 'lock'}`}
@@ -222,14 +218,14 @@ export default function ActionsPlugin({
                 }}
                 title="Read-Only Mode"
                 aria-label={`${!isEditable ? 'Unlock' : 'Lock'} read-only mode`}>
-                <i className={!isEditable ? 'unlock' : 'lock'}/>
+                <i className={!isEditable ? 'unlock' : 'lock'} />
             </button>
             <button
                 className="action-button"
                 onClick={handleMarkdownToggle}
                 title="Convert From Markdown"
                 aria-label="Convert from markdown">
-                <i className="markdown"/>
+                <i className="markdown" />
             </button>
             {isCollabActive && (
                 <button
@@ -243,21 +239,9 @@ export default function ActionsPlugin({
                     aria-label={`${
                         connected ? 'Disconnect from' : 'Connect to'
                     } a collaborative editing server`}>
-                    <i className={connected ? 'disconnect' : 'connect'}/>
+                    <i className={connected ? 'disconnect' : 'connect'} />
                 </button>
             )}
-            <button
-                className="action-button html"
-                onClick={() => {
-                    // Send modal poput
-                    showModal('Show Budget', (onClose) => (
-                        <ShowBudgget editor={editor} onClose={onClose} />
-                    ));
-                }}
-                title="Read-Only Mode"
-                aria-label={`${!isEditable ? 'Budgeting' : 'Budgeting'}`}>
-                <i className={!isEditable ? 'user' : 'user'}/>
-            </button>
             {modal}
         </div>
     );
@@ -270,8 +254,6 @@ function ShowClearDialog({
     editor: LexicalEditor;
     onClose: () => void;
 }): JSX.Element {
-
-
     return (
         <>
             Are you sure you want to clear the editor?
@@ -283,105 +265,6 @@ function ShowClearDialog({
                         onClose();
                     }}>
                     Clear
-                </Button>{' '}
-                <Button
-                    onClick={() => {
-                        editor.focus();
-                        onClose();
-                    }}>
-                    Cancel
-                </Button>
-            </div>
-        </>
-    );
-}
-
-
-function ShowBudgget({
-                         editor,
-                         onClose
-}: {
-    editor: LexicalEditor;
-    onClose: () => void;
-}): JSX.Element {
-    const [title, setTitle] = useState('https://disneyland.disney.go.com/destinations/disneyland');
-    const [amount, setAmount] = useState(100);
-    const [curr, setCurr] = useState('idr');
-    const [category, setCategory] = useState('transportation');
-
-    return (
-        <>
-            <div className="Modal__content">
-                <div className="TravelBudgetNode__container">
-                    <div className="TravelBudgetNode__inner">
-                        <div className="TravelBudgetNode__fieldsContainer">
-                            <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper">
-                                    <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__title"
-                                                  placeholder={title} value={title} onChange={setTitle} />
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div className="TravelBudgetNode__inner">
-                        <div className="TravelBudgetNode__fieldsContainer">
-                            <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper"><select defaultValue={curr} onChange={e => setCurr(e.target.value)}
-                                    className="TravelBudgetNode__optionInput"
-                                    name="currency" id="currency">
-                                    <option value="usd">USD</option>
-                                    <option value="sgd">SGD</option>
-                                    <option value="idr">IDR</option>
-                                    <option value="thb">THB</option>
-                                </select></div>
-                            </div>
-
-
-                            <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper">
-                                    <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
-                                                  placeholder={amount} value={amount} onChange={setAmount} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="TravelBudgetNode__inner">
-                        <div className="TravelBudgetNode__fieldsContainer">
-                            <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper">
-                                    <select defaultValue={category} onChange={e => setCategory(e.target.value)}
-                                            className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
-                                    name="category" id="category">
-                                    <option value="accommodation">Accommodation</option>
-                                    <option value="transportation">Transportation</option>
-                                    <option value="food">Food</option>
-                                    <option value="entertainment">Entertainment</option>
-                                    <option value="tour">Tour</option>
-                                    <option value="others">Others</option>
-                                </select></div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-
-                <Button
-                    onClick={() => {
-                        editor.update( () => {
-                            const rel = `${curr},${amount},${category}`;
-                            const myElement = $createTextLink(title, rel);
-                            const root = $getRoot();
-                            const paragraphNode = $createParagraphNode();
-                            paragraphNode.append(myElement)
-                            root.append(paragraphNode);
-                        });
-                        editor.focus();
-                        onClose();
-                    }}>
-                    Confirm
                 </Button>{' '}
                 <Button
                     onClick={() => {

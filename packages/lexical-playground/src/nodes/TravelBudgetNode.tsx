@@ -26,16 +26,19 @@ import {
   DOMExportOutput,
   KEY_BACKSPACE_COMMAND,
   KEY_DELETE_COMMAND,
-  LexicalCommand,
+  LexicalCommand, LexicalEditor,
   LexicalNode,
   NodeKey,
   SerializedLexicalNode,
   Spread,
 } from 'lexical';
-import {mergeRegister} from 'packages/lexical-utils/src';
 import * as React from 'react';
 import {Suspense,useCallback, useEffect, useState } from 'react';
 import {BudgetLinkNode} from "./BudgetLinkNode";
+import {INSERT_TABLE_COMMAND} from "@lexical/table";
+import TextInput from "../ui/TextInput";
+import {DialogActions} from "../ui/Dialog";
+import {mergeRegister} from "@lexical/utils";
 
 export type Options = ReadonlyArray<Option>;
 
@@ -393,6 +396,95 @@ function TravelBudgetComponent({nodeKey}: {nodeKey: NodeKey}) {
                     Cancel
                 </Button>
             </div>
+  );
+}
+
+
+
+export function InsertBudget({
+                                    editor,
+                                    onClose,
+                                  }: {
+  editor: LexicalEditor;
+  onClose: () => void;
+}): JSX.Element {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [title, setTitle] = useState('https://disneyland.disney.go.com/destinations/disneyland');
+  const [amount, setAmount] = useState(100);
+  const [curr, setCurr] = useState('idr');
+  const [category, setCategory] = useState('transportation');
+
+  return (
+      <div className="Modal__content">
+        <div className="TravelBudgetNode__container">
+          <div className="TravelBudgetNode__inner">
+            <div className="TravelBudgetNode__fieldsContainer">
+              <div className="TravelBudgetNode__singlefieldContainer">
+                <div className="TravelBudgetNode__textInputWrapper">
+                  <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__title"
+                                placeholder={title} value={title} onChange={setTitle} />
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div className="TravelBudgetNode__inner">
+            <div className="TravelBudgetNode__fieldsContainer">
+              <div className="TravelBudgetNode__singlefieldContainer">
+                <div className="TravelBudgetNode__textInputWrapper"><select defaultValue={curr} onChange={e => setCurr(e.target.value)}
+                                                                            className="TravelBudgetNode__optionInput"
+                                                                            name="currency" id="currency">
+                  {getCurrencies()}
+                </select></div>
+              </div>
+
+
+              <div className="TravelBudgetNode__singlefieldContainer">
+                <div className="TravelBudgetNode__textInputWrapper">
+                  <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
+                                placeholder={'amount'} value={amount} onChange={setAmount} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="TravelBudgetNode__inner">
+            <div className="TravelBudgetNode__fieldsContainer">
+              <div className="TravelBudgetNode__singlefieldContainer">
+                <div className="TravelBudgetNode__textInputWrapper">
+                  <select defaultValue={category} onChange={e => setCategory(e.target.value)}
+                          className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
+                          name="category" id="category">
+                    {getCategories()}
+                  </select></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <Button
+            onClick={() => {
+              editor.update( () => {
+                /* const rel = `${curr},${amount},${category}`;
+                 const myElement = $createTextLink(title, rel);
+                 console.log(rel);*/
+
+                //const budget = new BudgetLinkNode();
+              });
+              editor.focus();
+              onClose();
+            }}>
+          Confirm
+        </Button>{' '}
+        <Button
+            onClick={() => {
+              editor.focus();
+              onClose();
+            }}>
+          Cancel
+        </Button>
+      </div>
   );
 }
 

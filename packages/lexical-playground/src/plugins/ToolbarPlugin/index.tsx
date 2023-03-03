@@ -89,6 +89,7 @@ import {
 } from '../ImagesPlugin';
 import {InsertPollDialog} from '../PollPlugin';
 import {InsertNewTableDialog, InsertTableDialog} from '../TablePlugin';
+import {InsertBudget} from '../../nodes/TravelBudgetNode';
 
 const blockTypeToBlockName = {
   bullet: 'Bulleted List',
@@ -395,6 +396,7 @@ export default function ToolbarPlugin(): JSX.Element {
   const [canRedo, setCanRedo] = useState(false);
   const [modal, showModal] = useModal();
   const [isRTL, setIsRTL] = useState(false);
+
   const [codeLanguage, setCodeLanguage] = useState<string>('');
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
 
@@ -994,6 +996,24 @@ export default function ToolbarPlugin(): JSX.Element {
           <span className="text">Indent</span>
         </DropDownItem>
       </DropDown>
+
+      <button
+          disabled={!isEditable}
+          onClick={() => {
+            showModal('Travel Budget', (onClose) => (
+                <InsertBudget
+                    editor={activeEditor}
+                    onClose={onClose}
+                />
+            ));
+          }}
+          className={'toolbar-item spaced '}
+          title={'Travel Budget'}
+          type="button"
+          aria-label={`Budget`}>
+        <i className="format bucket" /> Budget
+      </button>
+
 
       {modal}
     </div>
