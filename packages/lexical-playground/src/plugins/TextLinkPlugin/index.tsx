@@ -8,7 +8,6 @@
 
 import {LinkNode} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {Props} from '@lexical/react/LexicalContentEditable';
 import {mergeRegister} from '@lexical/utils';
 import {
     $createParagraphNode,
@@ -22,6 +21,8 @@ import {
     TextNode
 } from 'lexical';
 import {default as React, FC, useEffect} from 'react';
+
+import FloatingLinkEditorPlugin from '../FloatingLinkEditorPlugin';
 
 export const INSERT_TEXTLINK_COMMAND: LexicalCommand<string> = createCommand(
     'INSERT_TEXTLINK_COMMAND',
@@ -234,6 +235,20 @@ export function InputForText({
         />
     );
 }
+
+const createDOM = LinkNode.prototype.createDOM;
+LinkNode.prototype.createDOM = function() {
+  const element = createDOM.apply(this, arguments);
+  element.setAttribute('data-type','budgetlink');
+  element.setAttribute('data-currency','USD');
+  element.setAttribute('data-amount','100');
+  element.setAttribute('data-category','Accommodation');
+  return element;
+}
+
+/* const updateLinkEditor = FloatingLinkEditorPlugin.prototype.;
+FloatingLinkEditorPlugin.prototype.update */
+
 
 
 class CustomLinkNode extends LinkNode {
