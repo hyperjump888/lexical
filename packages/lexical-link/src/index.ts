@@ -40,7 +40,7 @@ export type SerializedLinkNode = Spread<
   {
     type: string;
     url: string;
-    version: 1;
+    version: number;
   },
   Spread<LinkAttributes, SerializedElementNode>
 >;
