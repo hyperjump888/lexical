@@ -10,6 +10,7 @@ import {$isAutoLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {$findMatchingParent, mergeRegister} from '@lexical/utils';
 import {
+    $getRoot,
     $getSelection,
     $isRangeSelection, $isRootOrShadowRoot,
     COMMAND_PRIORITY_CRITICAL,
@@ -297,11 +298,8 @@ function TestBudgetPlugin({
                                     }
                                 }
                             }
-
+                            //const root = $getRoot();
                         });
-                        editor.focus();
-                        /*onClose();*/
-
                     }}>
                     Confirm
                 </Button>{' '}
