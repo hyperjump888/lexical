@@ -69,6 +69,8 @@ import PlaygroundEditorTheme from './themes/PlaygroundEditorTheme';
 import ContentEditable from './ui/ContentEditable';
 import Placeholder from './ui/Placeholder';
 import TextLinkPlugin from './plugins/TextLinkPlugin';
+import TestBudgetPlugin from './plugins/TestBudgetPlugin';
+
 
 const skipCollaborationInit =
   // @ts-ignore
@@ -151,6 +153,7 @@ export default function Editor(): JSX.Element {
         <KeywordsPlugin />
         <TextLinkPlugin />
         <SpeechToTextPlugin />
+        <TestBudgetPlugin />
         <AutoLinkPlugin />
         <CommentPlugin
           providerFactory={isCollab ? createWebsocketProvider : undefined}
