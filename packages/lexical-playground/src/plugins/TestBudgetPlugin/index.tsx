@@ -95,9 +95,6 @@ function TestBudgetPlugin({
                     setTitle(currentElement.getAttribute('href'));
                     setCategory(currentElement.getAttribute('data-category'));
                     setCurr(currentElement.getAttribute('data-currency'));
-
-                    console.log(currentElement.getAttribute('data-currency'))
-
                 }
             }
         }
@@ -257,7 +254,7 @@ function TestBudgetPlugin({
                         <div className="TravelBudgetNode__fieldsContainer">
                             <div className="TravelBudgetNode__singlefieldContainer">
                                 <div className="TravelBudgetNode__textInputWrapper">
-                                    <select defaultValue={curr} onChange={e => setCurr(e.target.value)}
+                                    <select value={curr} defaultValue={curr} data-test={curr} onChange={e => setCurr(e.target.value)}
                                                                                             className="TravelBudgetNode__optionInput TravelBudgetNode__currency"
                                                                                             name="currency" id="currency">
                                     {getCurrencies()}
@@ -277,7 +274,7 @@ function TestBudgetPlugin({
                         <div className="TravelBudgetNode__fieldsContainer">
                             <div className="TravelBudgetNode__singlefieldContainer">
                                 <div className="TravelBudgetNode__textInputWrapper">
-                                    <select defaultValue={category} onChange={e => setCategory(e.target.value)}
+                                    <select value={category} defaultValue={category} onChange={e => setCategory(e.target.value)}
                                             className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
                                             name="category" id="category">
                                         {getCategories()}
