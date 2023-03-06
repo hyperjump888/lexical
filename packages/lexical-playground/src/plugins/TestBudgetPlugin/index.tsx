@@ -11,7 +11,7 @@ import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {$findMatchingParent, mergeRegister} from '@lexical/utils';
 import {
     $getSelection,
-    $isRangeSelection,
+    $isRangeSelection, $isRootOrShadowRoot,
     COMMAND_PRIORITY_CRITICAL,
     COMMAND_PRIORITY_HIGH,
     COMMAND_PRIORITY_LOW,
@@ -51,8 +51,8 @@ function TestBudgetPlugin({
     const [isEditMode, setEditMode] = useState(false);
     const [title, setTitle] = useState('https://disneyland.disney.go.com/destinations/disneyland');
     const [amount, setAmount] = useState(100);
-    const [curr, setCurr] = useState('idr');
-    const [category, setCategory] = useState('transportation');
+    const [curr, setCurr] = useState('USD');
+    const [category, setCategory] = useState('Transportation');
 
     const [lastSelection, setLastSelection] = useState<
         RangeSelection | GridSelection | NodeSelection | null
@@ -216,6 +216,7 @@ function TestBudgetPlugin({
     </div>
     <LinkPreview url={linkUrl} />
 */}
+            <button className="Modal__closeButton" aria-label="Close modal" type="button">X</button>
             <h2 className="title__link">Travel Budget</h2>
             <div className="Modal__content">
 
@@ -242,7 +243,6 @@ function TestBudgetPlugin({
                                 </select></div>
                             </div>
 
-
                             <div className="TravelBudgetNode__singlefieldContainer">
                                 <div className="TravelBudgetNode__textInputWrapper">
                                     <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
@@ -251,8 +251,6 @@ function TestBudgetPlugin({
                             </div>
                         </div>
                     </div>
-
-
 
                     <div className="TravelBudgetNode__inner">
                         <div className="TravelBudgetNode__fieldsContainer">
@@ -272,22 +270,38 @@ function TestBudgetPlugin({
                 <Button
                     onClick={() => {
                         editor.update( () => {
-                            /*
-                            const elBudget =$createBudgetLinkNode({
-                              amount:amount,
-                              category:category,
-                              currency:curr,
-                              url:title
-                            });
-                            const root = $getRoot();
-                            const paragraphNode = $createParagraphNode();
-                            paragraphNode.append(elBudget);
-                            // Finally, append the paragraph to the root
-                            root.append(paragraphNode);
-                            */
+                            const selection = $getSelection();
+                            if ($isRangeSelection(selection)) {
+                                const anchorNode = selection.anchor.getNode();
+                                let element =
+                                    anchorNode.getKey() === 'root'
+                                        ? anchorNode
+                                        : $findMatchingParent(anchorNode, (e) => {
+                                            const parent = e.getParent();
+                                            return parent !== null && $isRootOrShadowRoot(parent);
+                                        });
+
+                                if (element === null) {
+                                    element = anchorNode.getTopLevelElementOrThrow();
+                                }
+
+                                const elementKey = element.getKey();
+                                const elementDOM = editor.getElementByKey(elementKey);
+                                if (elementDOM != null) {
+                                    const currentElement = elementDOM.firstChild;
+                                    if (currentElement != null) {
+                                        currentElement.setAttribute('data-amount',amount);
+                                        currentElement.setAttribute('data-category',category);
+                                        currentElement.setAttribute('data-currency',curr);
+                                        currentElement.setAttribute('href',title);
+                                    }
+                                }
+                            }
+
                         });
                         editor.focus();
                         /*onClose();*/
+
                     }}>
                     Confirm
                 </Button>{' '}

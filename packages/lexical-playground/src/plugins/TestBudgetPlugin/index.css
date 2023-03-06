@@ -207,10 +207,13 @@
 }
 
 .TravelBudgetNode__title {
-    width: 280px;
+    width: 310px;
+}
+.TravelBudgetNode__accomodation {
+    width: 330px;
 }
 .TravelBudgetNode__amount {
-    width: 200px;
+    width: 100px;
 }
 .TravelBudgetNode__container {
     border: 1px solid #eee;

@@ -242,7 +242,7 @@ LinkNode.prototype.createDOM = function() {
   element.setAttribute('data-type','budgetlink');
   element.setAttribute('data-currency','USD');
   element.setAttribute('data-amount','100');
-  element.setAttribute('data-category','Accommodation');
+  element.setAttribute('data-category','Transportation');
   return element;
 }
 
