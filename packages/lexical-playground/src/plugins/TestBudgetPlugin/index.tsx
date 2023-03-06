@@ -10,6 +10,7 @@ import {$isAutoLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {$findMatchingParent, mergeRegister} from '@lexical/utils';
 import {
+    $createParagraphNode, $createTextNode,
     $getRoot,
     $getSelection,
     $isRangeSelection, $isRootOrShadowRoot,
@@ -61,6 +62,7 @@ function TestBudgetPlugin({
 
     const updateLinkEditor = useCallback(() => {
         const selection = $getSelection();
+
         if ($isRangeSelection(selection)) {
             const node = getSelectedNode(selection);
             const parent = node.getParent();
@@ -70,6 +72,33 @@ function TestBudgetPlugin({
                 setLinkUrl(node.getURL());
             } else {
                 setLinkUrl('');
+            }
+            const anchorNode = selection.anchor.getNode();
+            let element =
+                anchorNode.getKey() === 'root'
+                    ? anchorNode
+                    : $findMatchingParent(anchorNode, (e) => {
+                        const parent = e.getParent();
+                        return parent !== null && $isRootOrShadowRoot(parent);
+                    });
+
+            if (element === null) {
+                element = anchorNode.getTopLevelElementOrThrow();
+            }
+
+            const elementKey = element.getKey();
+            const elementDOM = editor.getElementByKey(elementKey);
+            if (elementDOM != null) {
+                const currentElement = elementDOM.firstChild;
+                if (currentElement != null) {
+                    setAmount(currentElement.getAttribute('data-amount'));
+                    setTitle(currentElement.getAttribute('href'));
+                    setCategory(currentElement.getAttribute('data-category'));
+                    setCurr(currentElement.getAttribute('data-currency'));
+
+                    console.log(currentElement.getAttribute('data-currency'))
+
+                }
             }
         }
         const editorElem = editorRef.current;
@@ -208,15 +237,6 @@ function TestBudgetPlugin({
     />
 ) : (
         <>
-        {/*    <div className="link-input"> <a href={linkUrl} target="_blank" rel="noopener noreferrer">{linkUrl}</a>
-        <div className="link-edit" role="button" tabIndex={0} onMouseDown={(event) => event.preventDefault()}
-        onClick={() => {
-            setEditMode(true);
-        }}
-    />
-    </div>
-    <LinkPreview url={linkUrl} />
-*/}
             <button className="Modal__closeButton" aria-label="Close modal" type="button">X</button>
             <h2 className="title__link">Travel Budget</h2>
             <div className="Modal__content">
@@ -298,7 +318,12 @@ function TestBudgetPlugin({
                                     }
                                 }
                             }
-                            //const root = $getRoot();
+                                const root = $getRoot();
+                                const text = $createTextNode(' ');
+                                const paragraph = $createParagraphNode();
+                                paragraph.append(text);
+                                root.append(paragraph);
+                                root.selectEnd();
                         });
                     }}>
                     Confirm
