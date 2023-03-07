@@ -7,7 +7,7 @@
  */
 import './index.css';
 
-import {$isAutoLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND} from '@lexical/link';
+import {$isAutoLinkNode, $isLinkNode, LinkNode, TOGGLE_LINK_COMMAND} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {$findMatchingParent, mergeRegister} from '@lexical/utils';
 import {
@@ -58,10 +58,6 @@ function TestBudgetPlugin({
     const [category, setCategory] = useState('Transportation');
 
 
-    function handleChange(e){
-        console.log(e.target.value);
-      }
-
     const [lastSelection, setLastSelection] = useState<
         RangeSelection | GridSelection | NodeSelection | null
         >(null);
@@ -101,6 +97,7 @@ function TestBudgetPlugin({
                     setTitle(currentElement.getAttribute('href'));
                     setCategory(currentElement.getAttribute('data-category'));
                     setCurr(currentElement.getAttribute('data-currency'));
+
                 }
             }
         }
@@ -317,8 +314,19 @@ function TestBudgetPlugin({
                                         currentElement.setAttribute('data-category',category);
                                         currentElement.setAttribute('data-currency',curr);
                                         currentElement.setAttribute('href',title);
+
+                                        const rel = `${amount}, ${category}, ${curr} `;
+                                        currentElement.setAttribute('rel',rel);
+                                        const node = getSelectedNode(selection);
+                                        const linkParent = $findMatchingParent(node, $isLinkNode);
+                                        const writable = linkParent?.getWritable();
+                                        if(writable) writable.__rel = rel;
+                                
+
                                     }
                                 }
+
+                              
                             }
                             e.target.style.backgroundColor ='green';
                             e.target.style.color ='white';

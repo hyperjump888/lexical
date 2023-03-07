@@ -6,9 +6,10 @@
  *
  */
 
-import {LinkNode} from '@lexical/link';
+import {LinkNode, SerializedLinkNode} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {mergeRegister} from '@lexical/utils';
+import { Serializable } from 'child_process';
 import {
     $createParagraphNode,
     $getRoot,
@@ -18,8 +19,10 @@ import {
     createCommand,
     LexicalCommand,
     PASTE_COMMAND,
+    Spread,
     TextNode
 } from 'lexical';
+import { isArguments } from 'lodash-es';
 import {default as React, FC, useEffect} from 'react';
 
 import FloatingLinkEditorPlugin from '../FloatingLinkEditorPlugin';
@@ -109,6 +112,7 @@ function getLinkText(lnk: URL): string {
     }
 
 }
+
 
 
 export function $createTextLinkNode(urlID: string, txt: string): LinkNode {
@@ -239,9 +243,25 @@ export function InputForText({
 const createDOM = LinkNode.prototype.createDOM;
 LinkNode.prototype.createDOM = function() {
   const element = createDOM.apply(this, arguments);
+  const rel= `${element.getAttribute('data-currency')}, ${element.getAttribute('data-amount')}, ${element.getAttribute('data-category')} `;
+  console.log(rel)
   element.setAttribute('data-type','budgetlink');
   element.setAttribute('data-currency','USD');
   element.setAttribute('data-amount','100');
   element.setAttribute('data-category','Transportation');
+/*   element.setAttribute('rel',rel);
+
+  this.setRel(rel); */
+  
   return element;
 }
+
+/* 
+const exportJSON = LinkNode.prototype.exportJSON;
+LinkNode.prototype.exportJSON = function(){
+    return {
+        ...super.export
+
+    }
+} */
+
