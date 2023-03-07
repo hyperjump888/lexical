@@ -249,6 +249,8 @@ LinkNode.prototype.createDOM = function() {
   element.setAttribute('data-currency','USD');
   element.setAttribute('data-amount','100');
   element.setAttribute('data-category','Transportation');
+  const writable = this.getWritable();
+  if(writable) writable.__rel = rel;
 /*   element.setAttribute('rel',rel);
 
   this.setRel(rel); */
