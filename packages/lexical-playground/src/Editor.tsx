@@ -215,6 +215,8 @@ export default function Editor(): JSX.Element {
             <ExcalidrawPlugin />
             <TabFocusPlugin />
             <TabIndentationPlugin />
+            <TestBudgetPlugin />
+
             <CollapsiblePlugin />
             {floatingAnchorElem && !isSmallWidthViewport && (
               <>

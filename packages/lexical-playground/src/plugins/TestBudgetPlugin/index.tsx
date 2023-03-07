@@ -6,6 +6,7 @@
  *
  */
 import './index.css';
+
 import {$isAutoLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {$findMatchingParent, mergeRegister} from '@lexical/utils';
@@ -28,13 +29,13 @@ import {Dispatch, useCallback, useEffect, useRef, useState} from 'react';
 import * as React from 'react';
 import {createPortal} from 'react-dom';
 
+import {getCategories, getCurrencies} from '../../nodes/TravelBudgetNode';
+import Button from '../../ui/Button';
 import LinkPreview from '../../ui/LinkPreview';
 import {getSelectedNode} from '../../utils/getSelectedNode';
 import {setFloatingElemPosition} from '../../utils/setFloatingElemPosition';
 import {sanitizeUrl} from '../../utils/url';
-import {InputForText} from "../TextLinkPlugin";
-import Button from "../../ui/Button";
-import {getCategories, getCurrencies} from "../../nodes/TravelBudgetNode";
+import {InputForText} from '../TextLinkPlugin';
 
 function TestBudgetPlugin({
                                 editor,
@@ -55,6 +56,11 @@ function TestBudgetPlugin({
     const [amount, setAmount] = useState(100);
     const [curr, setCurr] = useState('USD');
     const [category, setCategory] = useState('Transportation');
+
+
+    function handleChange(e){
+        console.log(e.target.value);
+      }
 
     const [lastSelection, setLastSelection] = useState<
         RangeSelection | GridSelection | NodeSelection | null
@@ -234,9 +240,8 @@ function TestBudgetPlugin({
     />
 ) : (
         <>
-            <button className="Modal__closeButton" aria-label="Close modal" type="button">X</button>
             <h2 className="title__link">Travel Budget</h2>
-            <div className="Modal__content">
+            <div ref={editorRef} className="Modal__content">
 
                 <div className="TravelBudgetNode__container">
                     <div className="TravelBudgetNode__inner">
@@ -254,7 +259,7 @@ function TestBudgetPlugin({
                         <div className="TravelBudgetNode__fieldsContainer">
                             <div className="TravelBudgetNode__singlefieldContainer">
                                 <div className="TravelBudgetNode__textInputWrapper">
-                                    <select value={curr} defaultValue={curr} data-test={curr} onChange={e => setCurr(e.target.value)}
+                                    <select value={curr} data-test={curr} onChange={e => setCurr(e.target.value)}
                                                                                             className="TravelBudgetNode__optionInput TravelBudgetNode__currency"
                                                                                             name="currency" id="currency">
                                     {getCurrencies()}
@@ -274,7 +279,7 @@ function TestBudgetPlugin({
                         <div className="TravelBudgetNode__fieldsContainer">
                             <div className="TravelBudgetNode__singlefieldContainer">
                                 <div className="TravelBudgetNode__textInputWrapper">
-                                    <select value={category} defaultValue={category} onChange={e => setCategory(e.target.value)}
+                                    <select value={category} onChange={e => setCategory(e.target.value)}
                                             className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
                                             name="category" id="category">
                                         {getCategories()}
@@ -286,7 +291,7 @@ function TestBudgetPlugin({
                 </div>
 
                 <Button
-                    onClick={() => {
+                    onClick={(e) => {
                         editor.update( () => {
                             const selection = $getSelection();
                             if ($isRangeSelection(selection)) {
@@ -315,23 +320,20 @@ function TestBudgetPlugin({
                                     }
                                 }
                             }
-                                const root = $getRoot();
-                                const text = $createTextNode(' ');
-                                const paragraph = $createParagraphNode();
-                                paragraph.append(text);
-                                root.append(paragraph);
-                                root.selectEnd();
+                            e.target.style.backgroundColor ='green';
+                            e.target.style.color ='white';
+                            changeprops();
+                            function changeprops() {
+                                setTimeout(function () {
+                                    e.target.style.backgroundColor = '#eee';
+                                    e.target.style.color = 'black';
+                                }, 1200);
+                            }
                         });
                     }}>
-                    Confirm
+                    Save
                 </Button>{' '}
-                <Button
-                    onClick={() => {
-                        editor.focus();
-                        /*onClose();*/
-                    }}>
-                    Cancel
-                </Button>
+            
             </div>
     </>
 )}
@@ -339,7 +341,8 @@ function TestBudgetPlugin({
 );
 }
 
-function useFloatingLinkEditorToolbar(
+
+function useTestFloatingLinkEditorToolbar(
     editor: LexicalEditor,
     anchorElem: HTMLElement,
 ): JSX.Element | null {
@@ -400,5 +403,5 @@ export default function TestBudgetPluginEditor({
     anchorElem?: HTMLElement;
 }): JSX.Element | null {
     const [editor] = useLexicalComposerContext();
-    return useFloatingLinkEditorToolbar(editor, anchorElem);
+    return useTestFloatingLinkEditorToolbar(editor, anchorElem);
 }
