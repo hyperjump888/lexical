@@ -6,10 +6,10 @@
  *
  */
 
-import {LinkNode, SerializedLinkNode} from '@lexical/link';
+import {$createLinkNode, $isLinkNode, LinkNode, SerializedAutoLinkNode, SerializedLinkNode} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {mergeRegister} from '@lexical/utils';
-import { Serializable } from 'child_process';
+import {Serializable} from 'child_process';
 import {
     $createParagraphNode,
     $getRoot,
@@ -22,10 +22,11 @@ import {
     Spread,
     TextNode
 } from 'lexical';
-import { isArguments } from 'lodash-es';
+import {isArguments} from 'lodash-es';
 import {default as React, FC, useEffect} from 'react';
 
 import FloatingLinkEditorPlugin from '../FloatingLinkEditorPlugin';
+import {typeAndParent} from "typedoc/dist/lib/output/themes/default/partials/typeAndParent";
 
 export const INSERT_TEXTLINK_COMMAND: LexicalCommand<string> = createCommand(
     'INSERT_TEXTLINK_COMMAND',
@@ -114,7 +115,6 @@ function getLinkText(lnk: URL): string {
 }
 
 
-
 export function $createTextLinkNode(urlID: string, txt: string): LinkNode {
     // create link node here and then append the text node
     const textNode = new LinkNode(urlID);
@@ -128,7 +128,7 @@ export function $createTextLink(text: string, rel: string): LinkNode {
     // create link node here and then append the text node
     const myUrl = new URL(text);
     const txtForUrl = getLinkText(myUrl);
-    const textNode = new LinkNode(text,{ rel : rel});
+    const textNode = new LinkNode(text, {rel: rel});
     const txtwithinNode = new TextNode(txtForUrl);
     textNode.append(txtwithinNode);
     return textNode
@@ -241,29 +241,23 @@ export function InputForText({
 }
 
 const createDOM = LinkNode.prototype.createDOM;
-LinkNode.prototype.createDOM = function() {
-  const element = createDOM.apply(this, arguments);
-  const rel= `${element.getAttribute('data-currency')}, ${element.getAttribute('data-amount')}, ${element.getAttribute('data-category')} `;
-  console.log(rel)
-  element.setAttribute('data-type','budgetlink');
-  element.setAttribute('data-currency','USD');
-  element.setAttribute('data-amount','100');
-  element.setAttribute('data-category','Transportation');
-  const writable = this.getWritable();
-  if(writable) writable.__rel = rel;
-/*   element.setAttribute('rel',rel);
-
-  this.setRel(rel); */
-  
-  return element;
-}
-
-/* 
-const exportJSON = LinkNode.prototype.exportJSON;
-LinkNode.prototype.exportJSON = function(){
-    return {
-        ...super.export
-
+LinkNode.prototype.createDOM = function () {
+    const element = createDOM.apply(this, arguments);
+    if (element.getAttribute('data-type') === 'budgetlink') {
+        const rel = `${element.getAttribute('data-currency')}, ${element.getAttribute('data-amount')}, ${element.getAttribute('data-category')} `;
+        console.log(rel)
+        element.setAttribute('data-type', 'budgetlink');
+        element.setAttribute('data-currency', 'USD');
+        element.setAttribute('data-amount', '100');
+        element.setAttribute('data-category', 'Transportation');
+        if (this.getURL()) {
+            console.log("urlnya :" + this.getURL());
+            const writable = this.getWritable();
+            if (writable) {
+                writable.__rel = rel;
+            }
+        }
     }
-} */
 
+    return element;
+}

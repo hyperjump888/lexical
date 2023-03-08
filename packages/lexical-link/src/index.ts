@@ -133,6 +133,8 @@ export class LinkNode extends ElementNode {
       rel: serializedNode.rel,
       target: serializedNode.target,
     });
+    //console.log(serializedNode instanceof SerializedLinkNode)
+    console.log('import');
     node.setFormat(serializedNode.format);
     node.setIndent(serializedNode.indent);
     node.setDirection(serializedNode.direction);
