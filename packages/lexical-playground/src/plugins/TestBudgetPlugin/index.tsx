@@ -42,21 +42,30 @@ function TestBudgetPlugin({
                                 isLink,
                                 setIsLink,
                                 anchorElem,
+                                titlex,
+                                amountx,
+                                currx,
+                                categoryx
+
+
                             }: {
     editor: LexicalEditor;
     isLink: boolean;
     setIsLink: Dispatch<boolean>;
     anchorElem: HTMLElement;
+    titlex : string;
+    amountx : string;
+    currx : string;
+    categoryx : string;
 }): JSX.Element {
     const editorRef = useRef<HTMLDivElement | null>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
+    //const inputRef = useRef<HTMLInputElement>(null);
     const [linkUrl, setLinkUrl] = useState('');
     const [isEditMode, setEditMode] = useState(false);
-
-    const [title, setTitle] = useState('https://disneyland.disney.go.com/destinations/disneyland');
-    const [amount, setAmount] = useState(100);
-    const [curr, setCurr] = useState('USD');
-    const [category, setCategory] = useState('Transportation');
+    const [title, setTitle] = useState(titlex || 'https://disneyland.disney.go.com/destinations/disneyland');
+    const [amount, setAmount] = useState(amountx || 100);
+    const [curr, setCurr] = useState(currx || 'USD');
+    const [category, setCategory] = useState(categoryx || 'Transportation');
 
 
     const [lastSelection, setLastSelection] = useState<
@@ -69,40 +78,38 @@ function TestBudgetPlugin({
         if ($isRangeSelection(selection)) {
             const node = getSelectedNode(selection);
             const parent = node.getParent();
+            let isOke = true;
+            let myParent;
             if ($isLinkNode(parent)) {
                 setLinkUrl(parent.getURL());
+                myParent = parent;
             } else if ($isLinkNode(node)) {
                 setLinkUrl(node.getURL());
+                myParent = node;
             } else {
                 setLinkUrl('');
-            }
-            const anchorNode = node;
-            let element =
-                anchorNode.getKey() === 'root'
-                    ? anchorNode
-                    : $findMatchingParent(anchorNode, (e) => {
-                        //const parent = e.getParent();
-                        return parent !== null && $isRootOrShadowRoot(parent);
-                    });
-
-            if (element === null) {
-                element = anchorNode.getTopLevelElementOrThrow();
+                isOke = false;
             }
 
-            const elementKey = element.getKey();
-            const elementDOM = editor.getElementByKey(elementKey);
-            if (elementDOM != null) {
-                const currentElement = elementDOM.firstChild;
-                if (currentElement != null) {
-                    setAmount(currentElement.getAttribute('data-amount'));
-                    setTitle(currentElement.getAttribute('href'));
-                    setCategory(currentElement.getAttribute('data-category'));
-                    setCurr(currentElement.getAttribute('data-currency'));
-
-                    console.log(currentElement.getAttribute('data-amount'));
-
+            /* if (isOke) {
+                const elementKey = myParent?.getKey();
+                const currentElement = editor.getElementByKey(elementKey);
+                const rel = currentElement?.getAttribute('rel');
+                console.log('opanggil');
+                if (rel) {
+                    const arr = rel.split(',');
+                    if (arr.length) {
+                        setCurr(arr[0]);
+                        setAmount(arr[1]);
+                        setCategory(arr[2]);
+                    }
                 }
-            }
+
+
+            } */
+         
+       
+
         }
         const editorElem = editorRef.current;
         const nativeSelection = window.getSelection();
@@ -297,39 +304,28 @@ function TestBudgetPlugin({
                         editor.update( () => {
                             const selection = $getSelection();
                             if ($isRangeSelection(selection)) {
-                                const anchorNode = selection.anchor.getNode();
-                                let element =
-                                    anchorNode.getKey() === 'root'
-                                        ? anchorNode
-                                        : $findMatchingParent(anchorNode, (e) => {
-                                            const parent = e.getParent();
-                                            return parent !== null && $isRootOrShadowRoot(parent);
-                                        });
-
-                                if (element === null) {
-                                    element = anchorNode.getTopLevelElementOrThrow();
-                                }
-
-                                const elementKey = element.getKey();
-                                const elementDOM = editor.getElementByKey(elementKey);
-                                if (elementDOM != null) {
-                                    const currentElement = elementDOM.firstChild;
+                                const node = getSelectedNode(selection);
+                                const linkParent = $findMatchingParent(node, $isLinkNode);
+    
+                                console.log(linkParent.getURL());
+                                const elementKey = linkParent.getKey();
+                                const currentElement = editor.getElementByKey(elementKey);
+                    
                                     if (currentElement != null) {
-                                        currentElement.setAttribute('data-amount',amount);
+                                        currentElement.setAttribute('data-amount',amount+'');
                                         currentElement.setAttribute('data-category',category);
                                         currentElement.setAttribute('data-currency',curr);
                                         currentElement.setAttribute('href',title);
+                                        currentElement.setAttribute('data-test','testid');
 
                                         const rel = `${curr},${amount},${category}`;
                                         currentElement.setAttribute('rel',rel);
                                         const node = getSelectedNode(selection);
-                                        const linkParent = $findMatchingParent(node, $isLinkNode);
                                         const writable = linkParent?.getWritable();
                                         if(writable) writable.__rel = rel;
                                 
 
                                     }
-                                }
 
                               
                             }
@@ -361,7 +357,10 @@ function useTestFloatingLinkEditorToolbar(
 ): JSX.Element | null {
     const [activeEditor, setActiveEditor] = useState(editor);
     const [isLink, setIsLink] = useState(false);
-
+    const [title, setTitle] = useState('https://disneyland.disney.go.com/destinations/disneyland');
+    const [amount, setAmount] = useState('');
+    const [curr, setCurr] = useState('USD');
+    const [category, setCategory] = useState('Transportation');
     const updateToolbar = useCallback(() => {
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
@@ -372,6 +371,22 @@ function useTestFloatingLinkEditorToolbar(
             // We don't want this menu to open for auto links.
             if (linkParent != null && autoLinkParent == null) {
                 setIsLink(true);
+                setTitle(linkParent.getURL());
+                console.log(linkParent.getURL());
+                const elementKey = linkParent.getKey();
+                const currentElement = editor.getElementByKey(elementKey);
+                const rel = currentElement?.getAttribute('rel');
+                console.log(rel);
+                if (rel) {
+                    const arr = rel.split(',');
+                    if (arr.length) {
+                        setCurr(arr[0]);
+                        setAmount(arr[1]);
+                        setCategory(arr[2]);
+                    }
+                }
+
+                
             } else {
                 setIsLink(false);
             }
@@ -404,6 +419,11 @@ function useTestFloatingLinkEditorToolbar(
         isLink={isLink}
     anchorElem={anchorElem}
     setIsLink={setIsLink}
+    titlex={title}
+    amountx={amount}
+    currx={curr}
+    categoryx={category}
+
     />,
     anchorElem,
 )
