@@ -52,6 +52,7 @@ function TestBudgetPlugin({
     const inputRef = useRef<HTMLInputElement>(null);
     const [linkUrl, setLinkUrl] = useState('');
     const [isEditMode, setEditMode] = useState(false);
+
     const [title, setTitle] = useState('https://disneyland.disney.go.com/destinations/disneyland');
     const [amount, setAmount] = useState(100);
     const [curr, setCurr] = useState('USD');
@@ -75,12 +76,12 @@ function TestBudgetPlugin({
             } else {
                 setLinkUrl('');
             }
-            const anchorNode = selection.anchor.getNode();
+            const anchorNode = node;
             let element =
                 anchorNode.getKey() === 'root'
                     ? anchorNode
                     : $findMatchingParent(anchorNode, (e) => {
-                        const parent = e.getParent();
+                        //const parent = e.getParent();
                         return parent !== null && $isRootOrShadowRoot(parent);
                     });
 
@@ -97,6 +98,8 @@ function TestBudgetPlugin({
                     setTitle(currentElement.getAttribute('href'));
                     setCategory(currentElement.getAttribute('data-category'));
                     setCurr(currentElement.getAttribute('data-currency'));
+
+                    console.log(currentElement.getAttribute('data-amount'));
 
                 }
             }
@@ -260,7 +263,8 @@ function TestBudgetPlugin({
                                                                                             className="TravelBudgetNode__optionInput TravelBudgetNode__currency"
                                                                                             name="currency" id="currency">
                                     {getCurrencies()}
-                                </select></div>
+                                    </select>
+                                </div>
                             </div>
 
                             <div className="TravelBudgetNode__singlefieldContainer">
@@ -280,7 +284,8 @@ function TestBudgetPlugin({
                                             className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
                                             name="category" id="category">
                                         {getCategories()}
-                                    </select></div>
+                                    </select>
+                                </div>
                             </div>
 
                         </div>
@@ -315,7 +320,7 @@ function TestBudgetPlugin({
                                         currentElement.setAttribute('data-currency',curr);
                                         currentElement.setAttribute('href',title);
 
-                                        const rel = `${amount}, ${category}, ${curr} `;
+                                        const rel = `${curr},${amount},${category}`;
                                         currentElement.setAttribute('rel',rel);
                                         const node = getSelectedNode(selection);
                                         const linkParent = $findMatchingParent(node, $isLinkNode);

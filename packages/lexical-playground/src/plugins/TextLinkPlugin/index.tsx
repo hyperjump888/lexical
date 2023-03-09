@@ -243,21 +243,29 @@ export function InputForText({
 const createDOM = LinkNode.prototype.createDOM;
 LinkNode.prototype.createDOM = function () {
     const element = createDOM.apply(this, arguments);
-    if (element.getAttribute('data-type') === 'budgetlink') {
-        const rel = `${element.getAttribute('data-currency')}, ${element.getAttribute('data-amount')}, ${element.getAttribute('data-category')} `;
-        console.log(rel)
+    let rel = ' ';
+    try {
+        rel = `USD,100,Transportation`;
+        const writable = this.getWritable();
+        writable.__rel = rel;
+        element.setAttribute('rel', rel);
         element.setAttribute('data-type', 'budgetlink');
         element.setAttribute('data-currency', 'USD');
         element.setAttribute('data-amount', '100');
         element.setAttribute('data-category', 'Transportation');
-        if (this.getURL()) {
-            console.log("urlnya :" + this.getURL());
-            const writable = this.getWritable();
-            if (writable) {
-                writable.__rel = rel;
-            }
+        console.log("urlnya :" + this.getURL());
+    } catch(err) {
+        //extract rel for import
+        rel = element.getAttribute('rel') as string;
+        const arr = rel.split(',');
+        if (arr.length) {
+            element.setAttribute('data-type', 'budgetlink');
+            element.setAttribute('data-currency', arr[0]);
+            element.setAttribute('data-amount', arr[1]);
+            element.setAttribute('data-category', arr[2]);
         }
     }
-
+  
+    
     return element;
 }
