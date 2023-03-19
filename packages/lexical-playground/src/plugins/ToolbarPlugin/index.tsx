@@ -996,25 +996,6 @@ export default function ToolbarPlugin(): JSX.Element {
           <span className="text">Indent</span>
         </DropDownItem>
       </DropDown>
-
-      <button
-          disabled={!isEditable}
-          onClick={() => {
-            showModal('Travel Budget', (onClose) => (
-                <InsertBudget
-                    editor={activeEditor}
-                    onClose={onClose}
-                />
-            ));
-          }}
-          className={'toolbar-item spaced '}
-          title={'Travel Budget'}
-          type="button"
-          aria-label={`Budget`}>
-        <i className="format bucket" /> Budget
-      </button>
-
-
       {modal}
     </div>
   );
