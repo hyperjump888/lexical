@@ -14,7 +14,6 @@ import type {TextNode} from './nodes/LexicalTextNode';
 import {
   CAN_USE_BEFORE_INPUT,
   IS_APPLE_WEBKIT,
-  IS_APPLE_WEBKIT,
   IS_FIREFOX,
   IS_IOS,
   IS_SAFARI,

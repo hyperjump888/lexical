@@ -33,7 +33,15 @@ window.addEventListener('unhandledrejection', ({reason}) =>
 );
 
 createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
 );
+
+export function buildLexicalEditor(elementId:string) {
+  createRoot(document.getElementById(elementId) as HTMLElement).render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>,
+  );
+}
