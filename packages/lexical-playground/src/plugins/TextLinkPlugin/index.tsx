@@ -233,9 +233,7 @@ export function InputForText({
             className={className}
             placeholder={placeholder}
             value={value}
-            onChange={(e) => {
-                onChange(e.target.value);
-            }}
+            onChange={onChange}
         />
     );
 }

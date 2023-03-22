@@ -219,7 +219,18 @@ const currencyList: {code: string; name: string}[] = [
 const categories: string[] = ['Accommodation', 'Transportation','Food','Entertainment','Other'];
 
 export function getCurrencies() {
-  return currencyList.map((curr) => {
+  let map = new Map<string, string>();
+  currencyList.map( (myobj) => {
+    map.set(myobj.name,myobj.code);
+  });
+
+  let ar = [...map.entries()], sortedArray = ar.sort(), sortedMap = new Map(sortedArray), html = '', newObj : {code: string; name: string}[] = [] ;
+
+  sortedMap.forEach( (key,value) => {
+    newObj.push({code: key, name : value})
+  });
+
+  return newObj.map((curr) => {
     return (<option value={curr.code}>{curr.name}
     </option>);
   });

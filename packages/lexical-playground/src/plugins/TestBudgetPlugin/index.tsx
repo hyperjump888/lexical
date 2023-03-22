@@ -36,19 +36,27 @@ import {getSelectedNode} from '../../utils/getSelectedNode';
 import {setFloatingElemPosition} from '../../utils/setFloatingElemPosition';
 import {sanitizeUrl} from '../../utils/url';
 import {InputForText} from '../TextLinkPlugin';
+import Editor from "../../Editor";
+
+type BudgetType =  {
+    title : string,
+    curr : string,
+    amount : any,
+    category: string
+}
 
 function TestBudgetPlugin({
-                                editor,
-                                isLink,
-                                setIsLink,
-                                anchorElem,
-                                titlex,
-                                amountx,
-                                currx,
-                                categoryx
+                              editor,
+                              isLink,
+                              setIsLink,
+                              anchorElem,
+                              titlex,
+                              amountx,
+                              currx,
+                              categoryx
 
 
-                            }: {
+                          }: {
     editor: LexicalEditor;
     isLink: boolean;
     setIsLink: Dispatch<boolean>;
@@ -90,26 +98,6 @@ function TestBudgetPlugin({
                 setLinkUrl('');
                 isOke = false;
             }
-
-            /* if (isOke) {
-                const elementKey = myParent?.getKey();
-                const currentElement = editor.getElementByKey(elementKey);
-                const rel = currentElement?.getAttribute('rel');
-                console.log('opanggil');
-                if (rel) {
-                    const arr = rel.split(',');
-                    if (arr.length) {
-                        setCurr(arr[0]);
-                        setAmount(arr[1]);
-                        setCategory(arr[2]);
-                    }
-                }
-
-
-            } */
-         
-       
-
         }
         const editorElem = editorRef.current;
         const nativeSelection = window.getSelection();
@@ -120,7 +108,6 @@ function TestBudgetPlugin({
         }
 
         const rootElement = editor.getRootElement();
-
         if (
             selection !== null &&
             nativeSelection !== null &&
@@ -214,141 +201,148 @@ function TestBudgetPlugin({
         });
     }, [editor, updateLinkEditor]);
 
-    useEffect(() => {
-        if (isEditMode && inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, [isEditMode]);
+    const amountChange = (e : any) => {
+        setAmount(e.target.value);
+        saveButton(e,{
+            title : title,
+            amount:e.target.value,
+            curr:curr,
+            category:category
+        });
+    };
+    const titleChange = (e : any) => {
+        setTitle(e.target.value);
+        saveButton(e,{
+            title : e.target.value,
+            amount:amount,
+            curr:curr,
+            category:category
+        });
+    };
+    const currChange = (e : any) => {
+        setCurr(e.target.value);
+        saveButton(e,{
+            title : title,
+            amount:amount,
+            curr:e.target.value,
+            category:category
+        });
+    };
+
+    const categoryChange = (e : any) => {
+        setCategory(e.target.value);
+        saveButton(e,{
+            title : title,
+            amount:amount,
+            curr:curr,
+            category:e.target.value
+        });
+    };
+
+    const saveButton = (e:any,budgetValue : BudgetType) =>{
+        editor.update(() => {
+            const selection = $getSelection();
+            if ($isRangeSelection(selection)) {
+                const node = getSelectedNode(selection);
+                const linkParent = $findMatchingParent(node, $isLinkNode);
+                const elementKey = linkParent?.getKey();
+                const currentElement = editor.getElementByKey(elementKey || "");
+
+                if (currentElement != null) {
+                    currentElement.setAttribute('data-amount',budgetValue.amount);
+                    currentElement.setAttribute('data-category',budgetValue.category);
+                    currentElement.setAttribute('data-currency',budgetValue.curr);
+                    currentElement.setAttribute('href',budgetValue.title);
+                    currentElement.setAttribute('data-test','testid');
+
+                    const rel = `${budgetValue.curr},${budgetValue.amount},${budgetValue.category}`;
+                    currentElement.setAttribute('rel',rel);
+                    const node = getSelectedNode(selection);
+                    const writable = linkParent?.getWritable();
+                    if(writable) writable.__rel = rel;
+
+                    e.target.style.backgroundColor ='green';
+                    e.target.style.color ='white';
+                    e.target.focus();
+
+                    changeprops();
+                    function changeprops() {
+                        setTimeout(function () {
+                            e.target.style.backgroundColor = '#eee';
+                            e.target.style.color = 'rgb(61, 135, 245)';
+                            e.target.focus();
+
+                        }, 1200);
+                    }
+                }
+            }
+        });
+    }
 
     return (
         <div ref={editorRef} className="link-editor">
-        {isEditMode ? (
-                    <input
-                        ref={inputRef}
-                className="link-input"
-            value={linkUrl}
-            onChange={(event) => {
-        setLinkUrl(event.target.value);
-    }}
-    onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === 'Escape') {
-            event.preventDefault();
-            if (lastSelection !== null) {
-                if (linkUrl !== '') {
-                    editor.dispatchCommand(
-                        TOGGLE_LINK_COMMAND,
-                        sanitizeUrl(linkUrl),
-                    );
-                }
-                setEditMode(false);
-            }
-        }
-    }}
-    />
-) : (
-        <>
-            <h2 className="title__link">Travel Budget</h2>
-            <div ref={editorRef} className="Modal__content">
+            {(
+                <>
+                    <h2 className="title__link">Travel Budget</h2>
+                    <div ref={editorRef} className="Modal__content">
 
-                <div className="TravelBudgetNode__container">
-                    <div className="TravelBudgetNode__inner">
-                        <div className="TravelBudgetNode__fieldsContainer">
-                            <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper">
-                                    <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__title"
-                                                  placeholder={title} value={linkUrl} onChange={setTitle} />
+                        <div className="TravelBudgetNode__container">
+                            <div className="TravelBudgetNode__inner">
+                                <div className="TravelBudgetNode__fieldsContainer">
+                                    <div className="TravelBudgetNode__singlefieldContainer">
+                                        <div className="TravelBudgetNode__textInputWrapper">
+                                            <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__title"
+                                                          placeholder={title} value={linkUrl} onChange={titleChange} />
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div className="TravelBudgetNode__inner">
+                                <div className="TravelBudgetNode__fieldsContainer">
+                                    <div className="TravelBudgetNode__singlefieldContainer">
+                                        <div className="TravelBudgetNode__textInputWrapper">
+                                            <select value={curr} data-test={curr} onChange={currChange}
+                                                    className="TravelBudgetNode__optionInput TravelBudgetNode__currency"
+                                                    name="currency" id="currency">
+                                                {getCurrencies()}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="TravelBudgetNode__singlefieldContainer">
+                                        <div className="TravelBudgetNode__textInputWrapper">
+                                            <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
+                                                          placeholder={'amount'} value={amount} onChange={amountChange} />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                        </div>
-                    </div>
-                    <div className="TravelBudgetNode__inner">
-                        <div className="TravelBudgetNode__fieldsContainer">
-                            <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper">
-                                    <select value={curr} data-test={curr} onChange={e => setCurr(e.target.value)}
-                                                                                            className="TravelBudgetNode__optionInput TravelBudgetNode__currency"
-                                                                                            name="currency" id="currency">
-                                    {getCurrencies()}
-                                    </select>
-                                </div>
-                            </div>
+                            <div className="TravelBudgetNode__inner">
+                                <div className="TravelBudgetNode__fieldsContainer">
+                                    <div className="TravelBudgetNode__singlefieldContainer">
+                                        <div className="TravelBudgetNode__textInputWrapper">
+                                            <select value={category} onChange={categoryChange}
+                                                    className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
+                                                    name="category" id="category">
+                                                {getCategories()}
+                                            </select>
+                                        </div>
+                                    </div>
 
-                            <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper">
-                                    <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
-                                                  placeholder={'amount'} value={amount} onChange={setAmount} />
                                 </div>
                             </div>
                         </div>
+
                     </div>
-
-                    <div className="TravelBudgetNode__inner">
-                        <div className="TravelBudgetNode__fieldsContainer">
-                            <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper">
-                                    <select value={category} onChange={e => setCategory(e.target.value)}
-                                            className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
-                                            name="category" id="category">
-                                        {getCategories()}
-                                    </select>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-                <Button
-                    onClick={(e) => {
-                        editor.update( () => {
-                            const selection = $getSelection();
-                            if ($isRangeSelection(selection)) {
-                                const node = getSelectedNode(selection);
-                                const linkParent = $findMatchingParent(node, $isLinkNode);
-    
-                                console.log(linkParent.getURL());
-                                const elementKey = linkParent.getKey();
-                                const currentElement = editor.getElementByKey(elementKey);
-                    
-                                    if (currentElement != null) {
-                                        currentElement.setAttribute('data-amount',amount+'');
-                                        currentElement.setAttribute('data-category',category);
-                                        currentElement.setAttribute('data-currency',curr);
-                                        currentElement.setAttribute('href',title);
-                                        currentElement.setAttribute('data-test','testid');
-
-                                        const rel = `${curr},${amount},${category}`;
-                                        currentElement.setAttribute('rel',rel);
-                                        const node = getSelectedNode(selection);
-                                        const writable = linkParent?.getWritable();
-                                        if(writable) writable.__rel = rel;
-                                
-
-                                    }
-
-                              
-                            }
-                            e.target.style.backgroundColor ='green';
-                            e.target.style.color ='white';
-                            changeprops();
-                            function changeprops() {
-                                setTimeout(function () {
-                                    e.target.style.backgroundColor = '#eee';
-                                    e.target.style.color = 'black';
-                                }, 1200);
-                            }
-                        });
-                    }}>
-                    Save
-                </Button>{' '}
-            
-            </div>
-    </>
-)}
-    </div>
-);
+                </>
+            )}
+        </div>
+    );
 }
+
+
 
 
 function useTestFloatingLinkEditorToolbar(
@@ -386,7 +380,7 @@ function useTestFloatingLinkEditorToolbar(
                     }
                 }
 
-                
+
             } else {
                 setIsLink(false);
             }
@@ -416,23 +410,23 @@ function useTestFloatingLinkEditorToolbar(
         ? createPortal(
             <TestBudgetPlugin
                 editor={activeEditor}
-        isLink={isLink}
-    anchorElem={anchorElem}
-    setIsLink={setIsLink}
-    titlex={title}
-    amountx={amount}
-    currx={curr}
-    categoryx={category}
+                isLink={isLink}
+                anchorElem={anchorElem}
+                setIsLink={setIsLink}
+                titlex={title}
+                amountx={amount}
+                currx={curr}
+                categoryx={category}
 
-    />,
-    anchorElem,
-)
-: null;
+            />,
+            anchorElem,
+        )
+        : null;
 }
 
 export default function TestBudgetPluginEditor({
-                                                     anchorElem = document.body,
-                                                 }: {
+                                                   anchorElem = document.body,
+                                               }: {
     anchorElem?: HTMLElement;
 }): JSX.Element | null {
     const [editor] = useLexicalComposerContext();
