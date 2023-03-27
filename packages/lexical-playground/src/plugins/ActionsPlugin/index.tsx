@@ -161,6 +161,7 @@ export default function ActionsPlugin({
         <div className="actions">
             {SUPPORT_SPEECH_RECOGNITION && (
                 <button
+                    type="button"
                     id="spttech"
                     onClick={() => {
                        /* editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, !isSpeechToText);
@@ -179,6 +180,7 @@ export default function ActionsPlugin({
                 </button>
             )}
             <button
+                type="button"
                 className="action-button import"
                 onClick={() => importFile(editor)}
                 title="Import"
@@ -186,6 +188,7 @@ export default function ActionsPlugin({
                 <i className="import" />
             </button>
             <button
+                type="button"
                 className="action-button export"
                 onClick={() =>
                     exportFile(editor, {
@@ -223,6 +226,7 @@ export default function ActionsPlugin({
                 <i className={!isEditable ? 'unlock' : 'lock'} />
             </button>
             <button
+                type="button"
                 className="action-button"
                 onClick={handleMarkdownToggle}
                 title="Convert From Markdown"

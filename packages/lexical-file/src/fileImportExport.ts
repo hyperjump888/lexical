@@ -84,14 +84,21 @@ export function exportFileSilent(
     source: 'Lexical',
     version,
   };
-  //const fileName = config.fileName || now.toISOString();
-  //exportBlob(documentJSON, `${fileName}.lexical`);
-  const div = document.createElement('div');
-  div.setAttribute('id','lexicalsave');
-  div.style.display = 'none';
+
+  const hasDiv = document.getElementById('lexicalsave') === null ? false : true;
+  let div;
+  if (!hasDiv) {
+    div = document.createElement('div');
+    div.setAttribute('id','lexicalsave');
+    div.style.display = 'none';
+  } else {
+    div = document.getElementById('lexicalsave');
+  }
+  if (div === null) {
+    return;
+  }
   div.append(JSON.stringify(documentJSON));
   const body = document.body;
-
   if (body === null) {
     return;
   }
