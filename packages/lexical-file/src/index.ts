@@ -7,6 +7,6 @@
  *
  */
 
-import {exportFile, importFile} from './fileImportExport';
+import {exportFile, importFile, exportFileSilent} from './fileImportExport';
 
-export {exportFile, importFile};
+export {exportFile, importFile, exportFileSilent};

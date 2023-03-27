@@ -9,7 +9,7 @@
 import type {LexicalEditor} from 'lexical';
 
 import {$createCodeNode, $isCodeNode} from '@lexical/code';
-import {exportFile, importFile} from '@lexical/file';
+import {exportFile, importFile, exportFileSilent} from '@lexical/file';
 import {
     $convertFromMarkdownString,
     $convertToMarkdownString,
@@ -161,9 +161,11 @@ export default function ActionsPlugin({
         <div className="actions">
             {SUPPORT_SPEECH_RECOGNITION && (
                 <button
+                    id="spttech"
                     onClick={() => {
-                        editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, !isSpeechToText);
-                        setIsSpeechToText(!isSpeechToText);
+                       /* editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, !isSpeechToText);
+                        setIsSpeechToText(!isSpeechToText);*/
+                        exportFileSilent(editor);
                     }}
                     className={
                         'action-button action-button-mic ' +

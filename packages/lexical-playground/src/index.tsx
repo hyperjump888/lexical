@@ -13,6 +13,7 @@ import * as React from 'react';
 import {createRoot} from 'react-dom/client';
 
 import App from './App';
+import {exportFile,importFile} from "@lexical/file";
 
 // Handle runtime errors
 const showErrorOverlay = (err: Event) => {
@@ -39,7 +40,7 @@ createRoot(document.getElementById('root') as HTMLElement).render(
 );
 
 export function buildLexicalEditor(elementId:string) {
-  createRoot(document.getElementById(elementId) as HTMLElement).render(
+  return createRoot(document.getElementById(elementId) as HTMLElement).render(
       <React.StrictMode>
         <App />
       </React.StrictMode>,

@@ -72,6 +72,33 @@ export function exportFile(
   exportBlob(documentJSON, `${fileName}.lexical`);
 }
 
+
+export function exportFileSilent(
+    editor: LexicalEditor,
+) {
+  const now = new Date();
+  const editorState = editor.getEditorState();
+  const documentJSON: DocumentJSON = {
+    editorState: editorState,
+    lastSaved: now.getTime(),
+    source: 'Lexical',
+    version,
+  };
+  //const fileName = config.fileName || now.toISOString();
+  //exportBlob(documentJSON, `${fileName}.lexical`);
+  const div = document.createElement('div');
+  div.setAttribute('id','lexicalsave');
+  div.style.display = 'none';
+  div.append(JSON.stringify(documentJSON));
+  const body = document.body;
+
+  if (body === null) {
+    return;
+  }
+  body.appendChild(div);
+}
+
+
 // Adapted from https://stackoverflow.com/a/19328891/2013580
 function exportBlob(data: DocumentJSON, fileName: string) {
   const a = document.createElement('a');

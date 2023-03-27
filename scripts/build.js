@@ -607,6 +607,7 @@ function buildForkModule(outputPath, outputFileName) {
 }
 
 async function buildAll() {
+  console.log('build all call');
   if (!isWWW && (isRelease || isProduction)) {
     await buildTSDeclarationFiles();
   }
@@ -645,6 +646,7 @@ async function buildAll() {
     }
 
     if (!isWWW && (isRelease || isProduction)) {
+      console.log('this /dist');
       await moveTSDeclarationFilesIntoDist(packageName, outputPath);
     }
   }

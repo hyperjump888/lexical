@@ -1323,7 +1323,6 @@ button.action-button:disabled {
   border-top-right-radius: 10px;
   vertical-align: middle;
   overflow: auto;
-  height: 36px;
 }
 
 .toolbar button.toolbar-item {

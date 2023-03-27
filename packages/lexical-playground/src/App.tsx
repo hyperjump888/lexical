@@ -79,27 +79,7 @@ function prepopulatedRichText() {
         ),
         $createTextNode(` for documentation and more information.`),
       ),
-      $createListItemNode().append(
-        $createTextNode(`Check out the code on our `),
-        $createLinkNode('https://github.com/facebook/lexical').append(
-          $createTextNode('GitHub repository'),
-        ),
-        $createTextNode(`.`),
-      ),
-      $createListItemNode().append(
-        $createTextNode(`Playground code can be found `),
-        $createLinkNode(
-          'https://github.com/facebook/lexical/tree/main/packages/lexical-playground',
-        ).append($createTextNode('here')),
-        $createTextNode(`.`),
-      ),
-      $createListItemNode().append(
-        $createTextNode(`Join our `),
-        $createLinkNode('https://discord.com/invite/KmG4wQnnD9').append(
-          $createTextNode('Discord Server'),
-        ),
-        $createTextNode(` and chat with the team.`),
-      ),
+
     );
     root.append(list);
     const paragraph4 = $createParagraphNode();
@@ -139,8 +119,6 @@ function App(): JSX.Element {
             <div className="editor-shell">
               <Editor />
             </div>
-
-
           </SharedAutocompleteContext>
         </TableContext>
       </SharedHistoryContext>
