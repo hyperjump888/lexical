@@ -162,11 +162,10 @@ export default function ActionsPlugin({
             {SUPPORT_SPEECH_RECOGNITION && (
                 <button
                     type="button"
-                    id="spttech"
+
                     onClick={() => {
-                       /* editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, !isSpeechToText);
-                        setIsSpeechToText(!isSpeechToText);*/
-                        exportFileSilent(editor);
+                        editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, !isSpeechToText);
+                        setIsSpeechToText(!isSpeechToText);
                     }}
                     className={
                         'action-button action-button-mic ' +
@@ -179,6 +178,9 @@ export default function ActionsPlugin({
                     <i className="mic" />
                 </button>
             )}
+            <span id="lexsave" onClick={() => {
+                exportFileSilent(editor);
+            }} ></span>
             <button
                 type="button"
                 className="action-button import"
