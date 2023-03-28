@@ -367,6 +367,7 @@ function useTestFloatingLinkEditorToolbar(
                 setIsLink(true);
                 setTitle(linkParent.getURL());
                 console.log(linkParent.getURL());
+                //console.log(linkParent.)
                 const elementKey = linkParent.getKey();
                 const currentElement = editor.getElementByKey(elementKey);
                 const rel = currentElement?.getAttribute('rel');

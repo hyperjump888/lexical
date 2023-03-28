@@ -38,7 +38,17 @@ window.addEventListener('unhandledrejection', ({reason}) =>
 declare global {
   interface Window {
     buildLexicalEditor: any;
+      importFile : any;
   }
+}
+
+window.importFile = function(editor: LexicalEditor, text:string) {
+    const json = JSON.parse(text);
+    const editorState = editor.parseEditorState(
+        JSON.stringify(json.editorState),
+    );
+    editor.setEditorState(editorState);
+    editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);
 }
 
 window.buildLexicalEditor = function(elementId:string) {

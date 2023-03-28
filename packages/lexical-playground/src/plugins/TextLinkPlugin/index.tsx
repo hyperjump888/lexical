@@ -241,21 +241,26 @@ export function InputForText({
 const createDOM = LinkNode.prototype.createDOM;
 LinkNode.prototype.createDOM = function () {
     const element = createDOM.apply(this, arguments);
-    let rel = ' ';
+    let rel = this.getRel() || '';
+    let arr = ['USD','100','Transportation'];
     try {
-        rel = `USD,100,Transportation`;
+        console.log('rel : ' + rel);
+        if(rel) {
+            arr = rel.split(',');
+        }
         const writable = this.getWritable();
         writable.__rel = rel;
+        let type,curr,amount,category = '';
         element.setAttribute('rel', rel);
         element.setAttribute('data-type', 'budgetlink');
-        element.setAttribute('data-currency', 'USD');
-        element.setAttribute('data-amount', '100');
-        element.setAttribute('data-category', 'Transportation');
+        element.setAttribute('data-currency', arr[0]);
+        element.setAttribute('data-amount', arr[1]);
+        element.setAttribute('data-category', arr[2]);
         console.log("urlnya :" + this.getURL());
     } catch(err) {
         //extract rel for import
         rel = element.getAttribute('rel') as string;
-        const arr = rel.split(',');
+        arr = rel.split(',');
         if (arr.length) {
             element.setAttribute('data-type', 'budgetlink');
             element.setAttribute('data-currency', arr[0]);

@@ -310,7 +310,7 @@ export function exportingFile(
     const documentJSON: DocumentJSON = {
         editorState: editorState,
         lastSaved: now.getTime(),
-        source: 'Lexical',
+        source: 'Playground',
         version,
     };
     const hasDiv = e.target.closest(`.editor-shell`).querySelector('.lexicalstore') === null ? false : true;

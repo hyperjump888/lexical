@@ -18,10 +18,9 @@ export function importFile(editor: LexicalEditor) {
     const editorState = editor.parseEditorState(
       JSON.stringify(json.editorState),
     );
-    alert(JSON.stringify(editorState));
-    console.log(JSON.stringify(editorState));
     editor.setEditorState(editorState);
     editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);
+    console.log(editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined));
   });
 }
 
