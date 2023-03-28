@@ -18,6 +18,8 @@ export function importFile(editor: LexicalEditor) {
     const editorState = editor.parseEditorState(
       JSON.stringify(json.editorState),
     );
+    alert(JSON.stringify(editorState));
+    console.log(JSON.stringify(editorState));
     editor.setEditorState(editorState);
     editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);
   });
@@ -70,39 +72,6 @@ export function exportFile(
   };
   const fileName = config.fileName || now.toISOString();
   exportBlob(documentJSON, `${fileName}.lexical`);
-}
-
-
-export function exportFileSilent(
-    editor: LexicalEditor,
-) {
-  const now = new Date();
-  const editorState = editor.getEditorState();
-  const documentJSON: DocumentJSON = {
-    editorState: editorState,
-    lastSaved: now.getTime(),
-    source: 'Lexical',
-    version,
-  };
-
-  const hasDiv = document.getElementById('lexicalsave') === null ? false : true;
-  let div;
-  if (!hasDiv) {
-    div = document.createElement('div');
-    div.setAttribute('id','lexicalsave');
-    div.style.display = 'none';
-  } else {
-    div = document.getElementById('lexicalsave');
-  }
-  if (div === null) {
-    return;
-  }
-  div.append(JSON.stringify(documentJSON));
-  const body = document.body;
-  if (body === null) {
-    return;
-  }
-  body.appendChild(div);
 }
 
 

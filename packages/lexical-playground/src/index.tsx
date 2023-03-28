@@ -14,6 +14,7 @@ import {createRoot} from 'react-dom/client';
 
 import App from './App';
 import {exportFile,importFile} from "@lexical/file";
+import {CLEAR_HISTORY_COMMAND, LexicalEditor} from "lexical";
 
 // Handle runtime errors
 const showErrorOverlay = (err: Event) => {
@@ -33,9 +34,17 @@ window.addEventListener('unhandledrejection', ({reason}) =>
   showErrorOverlay(reason),
 );
 
-createRoot(document.getElementById('root') as HTMLElement).render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>,
-);
 
+declare global {
+  interface Window {
+    buildLexicalEditor: any;
+  }
+}
+
+window.buildLexicalEditor = function(elementId:string) {
+  return createRoot(document.getElementById(elementId) as HTMLElement).render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>,
+  );
+}

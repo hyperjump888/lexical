@@ -6,10 +6,10 @@
  *
  */
 
-import type {LexicalEditor} from 'lexical';
+import type {CLEAR_HISTORY_COMMAND, EditorState, LexicalEditor} from 'lexical';
 
 import {$createCodeNode, $isCodeNode} from '@lexical/code';
-import {exportFile, importFile, exportFileSilent} from '@lexical/file';
+import {exportFile, importFile} from '@lexical/file';
 import {
     $convertFromMarkdownString,
     $convertToMarkdownString,
@@ -35,6 +35,13 @@ import {
     SPEECH_TO_TEXT_COMMAND,
     SUPPORT_SPEECH_RECOGNITION,
 } from '../SpeechToTextPlugin';
+import {version} from "../../../../lexical-file/package.json";
+
+declare global {
+    interface Window {
+        LexicalEditor: any;
+    }
+}
 
 async function sendEditorState(editor: LexicalEditor): Promise<void> {
     const stringifiedEditorState = JSON.stringify(editor.getEditorState());
@@ -107,6 +114,7 @@ export default function ActionsPlugin({
     useEffect(() => {
         return editor.registerUpdateListener(
             ({dirtyElements, prevEditorState, tags}) => {
+                window.LexicalEditor = editor;
                 // If we are in read only mode, send the editor state
                 // to server and ask for validation if possible.
                 if (
@@ -162,7 +170,6 @@ export default function ActionsPlugin({
             {SUPPORT_SPEECH_RECOGNITION && (
                 <button
                     type="button"
-
                     onClick={() => {
                         editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, !isSpeechToText);
                         setIsSpeechToText(!isSpeechToText);
@@ -178,8 +185,8 @@ export default function ActionsPlugin({
                     <i className="mic" />
                 </button>
             )}
-            <span id="lexsave" onClick={() => {
-                exportFileSilent(editor);
+            <span className="lexsave" onClick={(e) => {
+                exportingFile(e,editor);
             }} ></span>
             <button
                 type="button"
@@ -284,4 +291,41 @@ function ShowClearDialog({
             </div>
         </>
     );
+}
+
+type DocumentJSON = {
+    editorState: EditorState;
+    lastSaved: number;
+    source: string | 'Lexical';
+    version: typeof version;
+};
+
+
+export function exportingFile(
+    e: any,
+    editor: LexicalEditor,
+) {
+    const now = new Date();
+    const editorState = editor.getEditorState();
+    const documentJSON: DocumentJSON = {
+        editorState: editorState,
+        lastSaved: now.getTime(),
+        source: 'Lexical',
+        version,
+    };
+    const hasDiv = e.target.closest(`.editor-shell`).querySelector('.lexicalstore') === null ? false : true;
+    let div;
+    if (!hasDiv) {
+        div = document.createElement('div');
+        div.setAttribute('class','lexicalstore');
+        div.style.display = 'none';
+    } else {
+        div = document.querySelector('.lexicalstore');
+    }
+    if (div === null) {
+        return;
+    }
+    div.innerHTML = JSON.stringify(documentJSON);
+    const parentWithClass = e.target.closest('.editor-shell');
+    parentWithClass.appendChild(div);
 }
