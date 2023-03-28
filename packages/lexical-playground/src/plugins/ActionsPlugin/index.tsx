@@ -328,4 +328,9 @@ export function exportingFile(
     div.innerHTML = JSON.stringify(documentJSON);
     const parentWithClass = e.target.closest('.editor-shell');
     parentWithClass.appendChild(div);
+    const parentId = parentWithClass.parentElement.getAttribute('id') || "";
+    if(parentId) {
+        div.setAttribute('id', 'lexicalstore'+parentId);
+    }
+
 }
