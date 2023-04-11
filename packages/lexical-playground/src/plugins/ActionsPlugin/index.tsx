@@ -36,10 +36,13 @@ import {
     SUPPORT_SPEECH_RECOGNITION,
 } from '../SpeechToTextPlugin';
 import {version} from "../../../../lexical-file/package.json";
+import { Root } from 'react-dom/client';
 
 declare global {
     interface Window {
         LexicalEditor: any;
+        LexicalRoot : any;
+        LexicalGetContent : any;
     }
 }
 
@@ -128,7 +131,8 @@ export default function ActionsPlugin({
                 editor.getEditorState().read(() => {
                     const root = $getRoot();
                     const children = root.getChildren();
-
+                    window.LexicalRoot = root;
+                    window.LexicalGetContent = root.getTextContent();
                     if (children.length > 1) {
                         setIsEditorEmpty(false);
                     } else {
@@ -187,7 +191,8 @@ export default function ActionsPlugin({
             )}
             <span className="lexsave" onClick={(e) => {
                 exportingFile(e,editor);
-            }} ></span>
+            }}
+            > </span>
             <button
                 type="button"
                 className="action-button import"
@@ -328,9 +333,8 @@ export function exportingFile(
     div.innerHTML = JSON.stringify(documentJSON);
     const parentWithClass = e.target.closest('.editor-shell');
     parentWithClass.appendChild(div);
-    const parentId = parentWithClass.parentElement.getAttribute('id') || "";
-    if(parentId) {
+    const parentId = parentWithClass.parentElement.getAttribute('id') || '';
+    if (parentId) {
         div.setAttribute('id', 'lexicalstore'+parentId);
     }
-
 }
