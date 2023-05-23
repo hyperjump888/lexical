@@ -7,6 +7,7 @@
  */
 
 import type {CLEAR_HISTORY_COMMAND, EditorState, LexicalEditor} from 'lexical';
+import { $generateHtmlFromNodes } from '@lexical/html';
 
 import {$createCodeNode, $isCodeNode} from '@lexical/code';
 import {exportFile, importFile} from '@lexical/file';
@@ -169,6 +170,29 @@ export default function ActionsPlugin({
         });
     }, [editor]);
 
+
+    const lexicalToHTML = (e) => {
+        editor.update(() => {
+            const editorState = editor.getEditorState();
+            const jsonString = JSON.stringify(editorState);
+            console.log('jsonString', jsonString);
+
+            const htmlString = $generateHtmlFromNodes(editor, null);
+            console.log('htmlString', htmlString);
+            const hasDiv = e.target.closest(`.editor-shell`).querySelector('.lexicalhtml') === null ? false : true;
+            let div;
+            if (!hasDiv) {
+                div = document.createElement('div');
+                div.setAttribute('class','lexicalhtml');
+                div.style.display = 'none';
+            } else {
+                div = document.querySelector('.lexicalhtml');
+            }
+
+        });
+    }
+
+
     return (
         <div className="actions">
             {SUPPORT_SPEECH_RECOGNITION && (
@@ -193,6 +217,9 @@ export default function ActionsPlugin({
                 exportingFile(e,editor);
             }}
             > </span>
+
+            <span className="lexhtml" onClick={(e) => lexicalToHTML(e)}
+            > </span>
             <button
                 type="button"
                 className="action-button import"
@@ -216,6 +243,7 @@ export default function ActionsPlugin({
             </button>
             <button
                 className="action-button clear"
+                type="button"
                 disabled={isEditorEmpty}
                 onClick={() => {
                     showModal('Clear editor', (onClose) => (
@@ -227,6 +255,7 @@ export default function ActionsPlugin({
                 <i className="clear" />
             </button>
             <button
+                type="button"
                 className={`action-button ${!isEditable ? 'unlock' : 'lock'}`}
                 onClick={() => {
                     // Send latest editor state to commenting validation server
@@ -249,6 +278,7 @@ export default function ActionsPlugin({
             </button>
             {isCollabActive && (
                 <button
+                    type="button"
                     className="action-button connect"
                     onClick={() => {
                         editor.dispatchCommand(TOGGLE_CONNECT_COMMAND, !connected);
