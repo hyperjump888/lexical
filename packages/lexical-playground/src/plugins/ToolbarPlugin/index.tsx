@@ -798,6 +798,7 @@ export default function ToolbarPlugin(): JSX.Element {
           </DropDown>
           <Divider />
           <DropDown
+            type="button"
             disabled={!isEditable}
             buttonClassName="toolbar-item spaced"
             buttonLabel="Insert"

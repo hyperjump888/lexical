@@ -27,7 +27,15 @@ Here are some examples of what you can do with Lexical:
 
 
 ---
-
+### Usage
+ window.LexicalRoot = root;
+ window.LexicalEditor = Editor active
+ window.importFile(window.LexicalEditor,${JSON.stringify(obj.value)});
+ window.LexicalGetContent = root.getTextContent();
+ $(".lexsave").click() = get json content in div.lexicalstore
+ $(".lexhtml").click() = get HTML content in div.lexicalhtml
+  
+---
 **Overview:**
 
 - [Getting started with React](#getting-started-with-react)

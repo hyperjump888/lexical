@@ -36,8 +36,7 @@ import {
     SPEECH_TO_TEXT_COMMAND,
     SUPPORT_SPEECH_RECOGNITION,
 } from '../SpeechToTextPlugin';
-import {version} from "../../../../lexical-file/package.json";
-import { Root } from 'react-dom/client';
+import {version} from '../../../../lexical-file/package.json';
 
 declare global {
     interface Window {
@@ -175,10 +174,7 @@ export default function ActionsPlugin({
         editor.update(() => {
             const editorState = editor.getEditorState();
             const jsonString = JSON.stringify(editorState);
-            console.log('jsonString', jsonString);
-
             const htmlString = $generateHtmlFromNodes(editor, null);
-            console.log('htmlString', htmlString);
             const hasDiv = e.target.closest(`.editor-shell`).querySelector('.lexicalhtml') === null ? false : true;
             let div;
             if (!hasDiv) {

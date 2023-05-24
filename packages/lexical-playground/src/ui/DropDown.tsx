@@ -135,6 +135,7 @@ function DropDownItems({
 
 export default function DropDown({
   disabled = false,
+  type = 'button',
   buttonLabel,
   buttonAriaLabel,
   buttonClassName,
@@ -143,6 +144,7 @@ export default function DropDown({
   stopCloseOnClickSelf,
 }: {
   disabled?: boolean;
+  type?: string;
   buttonAriaLabel?: string;
   buttonClassName: string;
   buttonIconClassName?: string;
@@ -203,6 +205,7 @@ export default function DropDown({
   return (
     <>
       <button
+        type="button"
         disabled={disabled}
         aria-label={buttonAriaLabel || buttonLabel}
         className={buttonClassName}
