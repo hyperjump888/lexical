@@ -19,7 +19,6 @@ body {
 }
 
 header {
-  max-width: 580px;
   margin: auto;
   position: relative;
   display: flex;

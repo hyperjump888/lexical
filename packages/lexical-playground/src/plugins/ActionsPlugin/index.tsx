@@ -170,24 +170,6 @@ export default function ActionsPlugin({
     }, [editor]);
 
 
-    const lexicalToHTML = (e) => {
-        editor.update(() => {
-            const editorState = editor.getEditorState();
-            const jsonString = JSON.stringify(editorState);
-            const htmlString = $generateHtmlFromNodes(editor, null);
-            const hasDiv = e.target.closest(`.editor-shell`).querySelector('.lexicalhtml') === null ? false : true;
-            let div;
-            if (!hasDiv) {
-                div = document.createElement('div');
-                div.setAttribute('class','lexicalhtml');
-                div.style.display = 'none';
-            } else {
-                div = document.querySelector('.lexicalhtml');
-            }
-
-        });
-    }
-
 
     return (
         <div className="actions">
@@ -214,8 +196,9 @@ export default function ActionsPlugin({
             }}
             > </span>
 
-            <span className="lexhtml" onClick={(e) => lexicalToHTML(e)}
-            > </span>
+            <span className="lexhtml" onClick={(e) => lexicalToHTML(e, editor)}
+            > HTML </span>
+
             <button
                 type="button"
                 className="action-button import"
@@ -331,6 +314,35 @@ type DocumentJSON = {
     version: typeof version;
 };
 
+export function lexicalToHTML(
+    e : any,
+    editor: LexicalEditor,
+) {
+    editor.update(() => {
+        /* const editorState = editor.getEditorState();
+         const jsonString = JSON.stringify(editorState);
+         console.log(jsonString)*/
+        const htmlString = $generateHtmlFromNodes(editor, null);
+         //console.log(htmlString)
+        const hasDiv = e.target.closest(`.editor-shell`).querySelector('.lexicalhtml') === null ? false : true;
+        let div;
+        if (!hasDiv) {
+            //console.log('tidak ada div')
+            div = document.createElement('div');
+            div.setAttribute('class','lexicalhtml');
+
+            div.style.display = 'none';
+        } else {
+            div = document.querySelector('.lexicalhtml');
+        }
+        if (div === null) {
+            return;
+        }
+        div.innerHTML = htmlString;
+        const parentWithClass = e.target.closest('.editor-shell');
+        parentWithClass.appendChild(div);
+    });
+}
 
 export function exportingFile(
     e: any,
