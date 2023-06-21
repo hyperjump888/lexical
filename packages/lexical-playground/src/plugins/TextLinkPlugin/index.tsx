@@ -238,10 +238,27 @@ export function InputForText({
     );
 }
 
+export function InputForNumber({
+                                 className = '',
+                                 value,
+                                 onChange,
+                                 placeholder = '',
+                             }: Props): JSX.Element {
+    return (
+        <input
+            type="text"
+            className={className}
+            placeholder={placeholder}
+            value={value}
+            onChange={onChange}
+        />
+    );
+}
+
 const createDOM = LinkNode.prototype.createDOM;
 LinkNode.prototype.createDOM = function () {
     const element = createDOM.apply(this, arguments);
-    let rel = this.getRel() || '';
+    let rel = this.getRel() || 'USD,100,Transportation';
     let arr = ['USD','100','Transportation'];
     try {
         console.log('rel : ' + rel);
@@ -258,6 +275,7 @@ LinkNode.prototype.createDOM = function () {
         element.setAttribute('data-category', arr[2]);
         console.log("urlnya :" + this.getURL());
     } catch(err) {
+        console.log("ada err");
         //extract rel for import
         rel = element.getAttribute('rel') as string;
         arr = rel.split(',');
@@ -268,7 +286,7 @@ LinkNode.prototype.createDOM = function () {
             element.setAttribute('data-category', arr[2]);
         }
     }
-  
-    
+
+
     return element;
 }

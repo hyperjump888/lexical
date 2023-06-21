@@ -35,13 +35,13 @@ import LinkPreview from '../../ui/LinkPreview';
 import {getSelectedNode} from '../../utils/getSelectedNode';
 import {setFloatingElemPosition} from '../../utils/setFloatingElemPosition';
 import {sanitizeUrl} from '../../utils/url';
-import {InputForText} from '../TextLinkPlugin';
+import {InputForNumber, InputForText} from '../TextLinkPlugin';
 import Editor from "../../Editor";
 
-type BudgetType =  {
+type BudgetType = {
     title : string,
     curr : string,
-    amount : any,
+    amount : string,
     category: string
 }
 
@@ -62,7 +62,7 @@ function TestBudgetPlugin({
     setIsLink: Dispatch<boolean>;
     anchorElem: HTMLElement;
     titlex : string;
-    amountx : string;
+    amountx : number;
     currx : string;
     categoryx : string;
 }): JSX.Element {
@@ -202,85 +202,21 @@ function TestBudgetPlugin({
     }, [editor, updateLinkEditor]);
 
     const amountChange = (e : any) => {
-        setAmount(e.target.value);
-        saveButton(e,{
-            title : title,
-            amount:e.target.value,
-            curr:curr,
-            category:category
-        });
+        setAmount(parseInt(e.target.value));
     };
     const titleChange = (e : any) => {
         setTitle(e.target.value);
-        saveButton(e,{
-            title : e.target.value,
-            amount:amount,
-            curr:curr,
-            category:category
-        });
     };
     const currChange = (e : any) => {
         setCurr(e.target.value);
-        saveButton(e,{
-            title : title,
-            amount:amount,
-            curr:e.target.value,
-            category:category
-        });
     };
 
     const categoryChange = (e : any) => {
         setCategory(e.target.value);
-        saveButton(e,{
-            title : title,
-            amount:amount,
-            curr:curr,
-            category:e.target.value
-        });
     };
 
-    const saveButton = (e:any,budgetValue : BudgetType) =>{
-        editor.update(() => {
-            const selection = $getSelection();
-            if ($isRangeSelection(selection)) {
-                const node = getSelectedNode(selection);
-                const linkParent = $findMatchingParent(node, $isLinkNode);
-                const elementKey = linkParent?.getKey();
-                const currentElement = editor.getElementByKey(elementKey || "");
-
-                if (currentElement != null) {
-                    currentElement.setAttribute('data-amount',budgetValue.amount);
-                    currentElement.setAttribute('data-category',budgetValue.category);
-                    currentElement.setAttribute('data-currency',budgetValue.curr);
-                    currentElement.setAttribute('href',budgetValue.title);
-                    currentElement.setAttribute('data-test','testid');
-
-                    const rel = `${budgetValue.curr},${budgetValue.amount},${budgetValue.category}`;
-                    currentElement.setAttribute('rel',rel);
-                    const node = getSelectedNode(selection);
-                    const writable = linkParent?.getWritable();
-                    if(writable) writable.__rel = rel;
-
-                    e.target.style.backgroundColor ='green';
-                    e.target.style.color ='white';
-                    e.target.focus();
-
-                    changeprops();
-                    function changeprops() {
-                        setTimeout(function () {
-                            e.target.style.backgroundColor = '#eee';
-                            e.target.style.color = 'rgb(61, 135, 245)';
-                            e.target.focus();
-
-                        }, 1200);
-                    }
-                }
-            }
-        });
-    }
-
     return (
-        <div ref={editorRef} className="link-editor">
+        <div ref={editorRef} key={title} className="link-editor">
             {(
                 <>
                     <h2 className="title__link">Travel Budget</h2>
@@ -312,7 +248,7 @@ function TestBudgetPlugin({
 
                                     <div className="TravelBudgetNode__singlefieldContainer">
                                         <div className="TravelBudgetNode__textInputWrapper">
-                                            <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
+                                            <InputForNumber className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
                                                           placeholder={'amount'} value={amount} onChange={amountChange} />
                                         </div>
                                     </div>
@@ -334,6 +270,67 @@ function TestBudgetPlugin({
                                 </div>
                             </div>
                         </div>
+
+                        <Button
+                            onClick={(e) => {
+                                editor.update( () => {
+                                    const selection = $getSelection();
+                                    if ($isRangeSelection(selection)) {
+                                        const anchorNode = selection.anchor.getNode();
+                                        let element =
+                                            anchorNode.getKey() === 'root'
+                                                ? anchorNode
+                                                : $findMatchingParent(anchorNode, (e) => {
+                                                    const parent = e.getParent();
+                                                    return parent !== null && $isRootOrShadowRoot(parent);
+                                                });
+
+                                        if (element === null) {
+                                            element = anchorNode.getTopLevelElementOrThrow();
+                                        }
+
+                                        const elementKey = element.getKey();
+                                        const elementDOM = editor.getElementByKey(elementKey);
+                                        if (elementDOM != null) {
+                                            console.log("element dom not null");
+                                            console.log(`${amount} ${category} ${curr} ${title} `)
+                                            const currentElement = elementDOM.querySelector('a');
+                                            if (currentElement != null) {
+                                                currentElement.setAttribute('data-amount',amount);
+                                                currentElement.setAttribute('data-category',category);
+                                                currentElement.setAttribute('data-currency',curr);
+                                                //currentElement.setAttribute('href',title);
+                                                currentElement.setAttribute('rel',`${curr},${amount},${category}`);
+
+                                            }
+                                        } else {
+                                            console.log("element dom not null")
+                                        }
+                                    }
+
+                                    e.target.style.backgroundColor ='green';
+                                    e.target.style.color ='white';
+                                    e.target.focus();
+
+                                    changeprops();
+                                    function changeprops() {
+                                        setTimeout(function () {
+                                            e.target.style.backgroundColor = '#eee';
+                                            e.target.style.color = 'rgb(61, 135, 245)';
+                                            e.target.focus();
+
+                                        }, 1200);
+                                    }
+                                    // const root = $getRoot();
+                                    // const text = $createTextNode(' ');
+                                    // const paragraph = $createParagraphNode();
+                                    // paragraph.append(text);
+                                    // root.append(paragraph);
+                                    // root.selectEnd();
+                                });
+                            }}>
+                            Save
+                        </Button>{' '}
 
                     </div>
                 </>

@@ -231,14 +231,14 @@ export function getCurrencies() {
   });
 
   return newObj.map((curr) => {
-    return (<option value={curr.code}>{curr.name}
+    return (<option key={curr.code} value={curr.code}>{curr.name}
     </option>);
   });
 }
 
 export function getCategories() {
   return categories.map((category) => {
-    return (<option value={category}>{category}
+    return (<option key={category} value={category}>{category}
     </option>);
   });
 }
@@ -405,7 +405,7 @@ function TravelBudgetComponent({nodeKey}: {nodeKey: NodeKey}) {
                     onClick={() => {
                         editor.focus();
                     }}>
-                    Cancel
+                    Cancel x
                 </Button>
             </div>
   );

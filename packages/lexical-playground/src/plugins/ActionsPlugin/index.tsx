@@ -197,7 +197,7 @@ export default function ActionsPlugin({
             > </span>
 
             <span className="lexhtml" onClick={(e) => lexicalToHTML(e, editor)}
-            > HTML </span>
+            > </span>
 
             <button
                 type="button"
