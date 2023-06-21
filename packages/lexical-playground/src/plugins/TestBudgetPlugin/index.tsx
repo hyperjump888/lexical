@@ -202,7 +202,7 @@ function TestBudgetPlugin({
     }, [editor, updateLinkEditor]);
 
     const amountChange = (e : any) => {
-        setAmount(parseInt(e.target.value));
+        setAmount(parseFloat(e.target.value) || 0);
     };
     const titleChange = (e : any) => {
         setTitle(e.target.value);
@@ -276,6 +276,11 @@ function TestBudgetPlugin({
                                 editor.update( () => {
                                     const selection = $getSelection();
                                     if ($isRangeSelection(selection)) {
+                                        const node = getSelectedNode(selection);
+                                        const linkParent = $findMatchingParent(node, $isLinkNode);
+                                     /*   const elementKey = linkParent?.getKey();
+                                        const currentElement = editor.getElementByKey(elementKey || "");*/
+
                                         const anchorNode = selection.anchor.getNode();
                                         let element =
                                             anchorNode.getKey() === 'root'
@@ -292,19 +297,19 @@ function TestBudgetPlugin({
                                         const elementKey = element.getKey();
                                         const elementDOM = editor.getElementByKey(elementKey);
                                         if (elementDOM != null) {
-                                            console.log("element dom not null");
-                                            console.log(`${amount} ${category} ${curr} ${title} `)
+                                   /*         console.log("element dom not null");
+                                            console.log(`${amount} ${category} ${curr} ${title} `)*/
                                             const currentElement = elementDOM.querySelector('a');
+                                            const rel = `${curr},${amount},${category}`;
                                             if (currentElement != null) {
                                                 currentElement.setAttribute('data-amount',amount);
                                                 currentElement.setAttribute('data-category',category);
                                                 currentElement.setAttribute('data-currency',curr);
                                                 //currentElement.setAttribute('href',title);
-                                                currentElement.setAttribute('rel',`${curr},${amount},${category}`);
-
+                                                currentElement.setAttribute('rel',rel);
+                                                const writable = linkParent?.getWritable();
+                                                if (writable) writable.__rel = rel;
                                             }
-                                        } else {
-                                            console.log("element dom not null")
                                         }
                                     }
 
