@@ -86,17 +86,12 @@ function TestBudgetPlugin({
         if ($isRangeSelection(selection)) {
             const node = getSelectedNode(selection);
             const parent = node.getParent();
-            let isOke = true;
-            let myParent;
             if ($isLinkNode(parent)) {
                 setLinkUrl(parent.getURL());
-                myParent = parent;
             } else if ($isLinkNode(node)) {
                 setLinkUrl(node.getURL());
-                myParent = node;
             } else {
                 setLinkUrl('');
-                isOke = false;
             }
         }
         const editorElem = editorRef.current;
@@ -215,6 +210,63 @@ function TestBudgetPlugin({
         setCategory(e.target.value);
     };
 
+    const saveButton = (e : any) => {
+        editor.update( () => {
+            const selection = $getSelection();
+            if ($isRangeSelection(selection)) {
+                const node = getSelectedNode(selection);
+                const linkParent = $findMatchingParent(node, $isLinkNode);
+                const anchorNode = selection.anchor.getNode();
+                let element =
+                    anchorNode.getKey() === 'root'
+                        ? anchorNode
+                        : $findMatchingParent(anchorNode, (el) => {
+                            const parent = el.getParent();
+                            return parent !== null && $isRootOrShadowRoot(parent);
+                        });
+
+                if (element === null) {
+                    element = anchorNode.getTopLevelElementOrThrow();
+                }
+                const elementKey = element.getKey();
+                const elementDOM = editor.getElementByKey(elementKey);
+                if (elementDOM != null) {
+                    const currentElement = elementDOM.querySelector('a');
+                    const rel = `${curr},${amount},${category}`;
+                    if (currentElement != null) {
+                        currentElement.setAttribute('data-amount',amount);
+                        currentElement.setAttribute('data-category',category);
+                        currentElement.setAttribute('data-currency',curr);
+                        //currentElement.setAttribute('href',title);
+                        currentElement.setAttribute('rel',rel);
+                        const writable = linkParent?.getWritable();
+                        if (writable) writable.__rel = rel;
+                    }
+                }
+            }
+
+            e.target.style.backgroundColor ='green';
+            e.target.style.color ='white';
+            e.target.focus();
+
+            changeprops();
+            function changeprops() {
+                setTimeout(function () {
+                    e.target.style.backgroundColor = '#eee';
+                    e.target.style.color = 'rgb(61, 135, 245)';
+                    e.target.focus();
+
+                }, 1200);
+            }
+            // const root = $getRoot();
+            // const text = $createTextNode(' ');
+            // const paragraph = $createParagraphNode();
+            // paragraph.append(text);
+            // root.append(paragraph);
+            // root.selectEnd();
+        });
+    }
+
     return (
         <div ref={editorRef} key={title} className="link-editor">
             {(
@@ -272,68 +324,7 @@ function TestBudgetPlugin({
                         </div>
 
                         <Button
-                            onClick={(e) => {
-                                editor.update( () => {
-                                    const selection = $getSelection();
-                                    if ($isRangeSelection(selection)) {
-                                        const node = getSelectedNode(selection);
-                                        const linkParent = $findMatchingParent(node, $isLinkNode);
-                                     /*   const elementKey = linkParent?.getKey();
-                                        const currentElement = editor.getElementByKey(elementKey || "");*/
-
-                                        const anchorNode = selection.anchor.getNode();
-                                        let element =
-                                            anchorNode.getKey() === 'root'
-                                                ? anchorNode
-                                                : $findMatchingParent(anchorNode, (e) => {
-                                                    const parent = e.getParent();
-                                                    return parent !== null && $isRootOrShadowRoot(parent);
-                                                });
-
-                                        if (element === null) {
-                                            element = anchorNode.getTopLevelElementOrThrow();
-                                        }
-
-                                        const elementKey = element.getKey();
-                                        const elementDOM = editor.getElementByKey(elementKey);
-                                        if (elementDOM != null) {
-                                   /*         console.log("element dom not null");
-                                            console.log(`${amount} ${category} ${curr} ${title} `)*/
-                                            const currentElement = elementDOM.querySelector('a');
-                                            const rel = `${curr},${amount},${category}`;
-                                            if (currentElement != null) {
-                                                currentElement.setAttribute('data-amount',amount);
-                                                currentElement.setAttribute('data-category',category);
-                                                currentElement.setAttribute('data-currency',curr);
-                                                //currentElement.setAttribute('href',title);
-                                                currentElement.setAttribute('rel',rel);
-                                                const writable = linkParent?.getWritable();
-                                                if (writable) writable.__rel = rel;
-                                            }
-                                        }
-                                    }
-
-                                    e.target.style.backgroundColor ='green';
-                                    e.target.style.color ='white';
-                                    e.target.focus();
-
-                                    changeprops();
-                                    function changeprops() {
-                                        setTimeout(function () {
-                                            e.target.style.backgroundColor = '#eee';
-                                            e.target.style.color = 'rgb(61, 135, 245)';
-                                            e.target.focus();
-
-                                        }, 1200);
-                                    }
-                                    // const root = $getRoot();
-                                    // const text = $createTextNode(' ');
-                                    // const paragraph = $createParagraphNode();
-                                    // paragraph.append(text);
-                                    // root.append(paragraph);
-                                    // root.selectEnd();
-                                });
-                            }}>
+                            onClick={(e) => {saveButton(e)}}>
                             Save
                         </Button>{' '}
 
@@ -368,7 +359,6 @@ function useTestFloatingLinkEditorToolbar(
             if (linkParent != null && autoLinkParent == null) {
                 setIsLink(true);
                 setTitle(linkParent.getURL());
-                console.log(linkParent.getURL());
                 //console.log(linkParent.)
                 const elementKey = linkParent.getKey();
                 const currentElement = editor.getElementByKey(elementKey);
