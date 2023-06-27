@@ -258,8 +258,9 @@ export function InputForNumber({
 const createDOM = LinkNode.prototype.createDOM;
 LinkNode.prototype.createDOM = function () {
     const element = createDOM.apply(this, arguments);
-    let rel = this.getRel() || 'USD,100,Transportation';
-    let arr = ['USD','100','Transportation'];
+    let mycur = window.hasOwnProperty('base_currency') ? window.base_currency : 'USD';
+    let rel = this.getRel() || `${mycur},100,Transportation`;
+    let arr = [mycur,'100','Transportation'];
     try {
         console.log('rel : ' + rel);
         if(rel) {
