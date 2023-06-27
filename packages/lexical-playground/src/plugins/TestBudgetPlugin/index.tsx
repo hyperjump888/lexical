@@ -70,7 +70,9 @@ function TestBudgetPlugin({
     //const inputRef = useRef<HTMLInputElement>(null);
     const [linkUrl, setLinkUrl] = useState('');
     const [isEditMode, setEditMode] = useState(false);
-    const [title, setTitle] = useState(titlex || 'https://disneyland.disney.go.com/destinations/disneyland');
+    const [title, setTitle] = useState(titlex || 'DisneyLand');
+    const [mytitle, setMytitle] = useState(titlex || 'DisneyLand');
+
     const [amount, setAmount] = useState(amountx || 100);
     const [curr, setCurr] = useState(currx || 'USD');
     const [category, setCategory] = useState(categoryx || 'Transportation');
@@ -200,7 +202,7 @@ function TestBudgetPlugin({
         setAmount(parseFloat(e.target.value) || 0);
     };
     const titleChange = (e : any) => {
-        setTitle(e.target.value);
+        setMytitle(e.target.value);
     };
     const currChange = (e : any) => {
         setCurr(e.target.value);
@@ -217,6 +219,7 @@ function TestBudgetPlugin({
                 const node = getSelectedNode(selection);
                 const linkParent = $findMatchingParent(node, $isLinkNode);
                 const anchorNode = selection.anchor.getNode();
+                anchorNode.setTextContent(mytitle);
                 let element =
                     anchorNode.getKey() === 'root'
                         ? anchorNode
@@ -280,7 +283,7 @@ function TestBudgetPlugin({
                                     <div className="TravelBudgetNode__singlefieldContainer">
                                         <div className="TravelBudgetNode__textInputWrapper">
                                             <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__title"
-                                                          placeholder={title} value={linkUrl} onChange={titleChange} />
+                                                          placeholder={title} value={mytitle} onChange={titleChange} />
                                         </div>
                                     </div>
 
@@ -344,7 +347,7 @@ function useTestFloatingLinkEditorToolbar(
 ): JSX.Element | null {
     const [activeEditor, setActiveEditor] = useState(editor);
     const [isLink, setIsLink] = useState(false);
-    const [title, setTitle] = useState('https://disneyland.disney.go.com/destinations/disneyland');
+    const [title, setTitle] = useState('Disney Land');
     const [amount, setAmount] = useState('');
     const [curr, setCurr] = useState('USD');
     const [category, setCategory] = useState('Transportation');
@@ -354,12 +357,11 @@ function useTestFloatingLinkEditorToolbar(
             const node = getSelectedNode(selection);
             const linkParent = $findMatchingParent(node, $isLinkNode);
             const autoLinkParent = $findMatchingParent(node, $isAutoLinkNode);
-
             // We don't want this menu to open for auto links.
             if (linkParent != null && autoLinkParent == null) {
                 setIsLink(true);
-                setTitle(linkParent.getURL());
-                //console.log(linkParent.)
+                setTitle(linkParent.getTextContent());
+                //console.log(linkParent.getTextContent())
                 const elementKey = linkParent.getKey();
                 const currentElement = editor.getElementByKey(elementKey);
                 const rel = currentElement?.getAttribute('rel');
@@ -372,8 +374,6 @@ function useTestFloatingLinkEditorToolbar(
                         setCategory(arr[2]);
                     }
                 }
-
-
             } else {
                 setIsLink(false);
             }

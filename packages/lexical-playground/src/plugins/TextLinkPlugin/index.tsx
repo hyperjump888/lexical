@@ -267,7 +267,6 @@ LinkNode.prototype.createDOM = function () {
         }
         const writable = this.getWritable();
         writable.__rel = rel;
-        let type,curr,amount,category = '';
         element.setAttribute('rel', rel);
         element.setAttribute('data-type', 'budgetlink');
         element.setAttribute('data-currency', arr[0]);
