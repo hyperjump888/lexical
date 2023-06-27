@@ -219,7 +219,7 @@ function TestBudgetPlugin({
                 const node = getSelectedNode(selection);
                 const linkParent = $findMatchingParent(node, $isLinkNode);
                 const anchorNode = selection.anchor.getNode();
-                anchorNode.setTextContent(mytitle);
+                anchorNode.setTextContent(mytitle.trim());
                 let element =
                     anchorNode.getKey() === 'root'
                         ? anchorNode
