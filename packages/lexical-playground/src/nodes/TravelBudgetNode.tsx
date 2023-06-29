@@ -8,13 +8,10 @@
 
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {useLexicalNodeSelection} from '@lexical/react/useLexicalNodeSelection';
-import {$createTextLink, InputForText} from './../plugins/TextLinkPlugin';
-import Button from './../ui/Button';
-import useModal from './../hooks/useModal';
-
+import {mergeRegister} from '@lexical/utils';
 import {
-  $applyNodeReplacement, $createParagraphNode,
-  $getNodeByKey, $getRoot,
+  $applyNodeReplacement,
+  $getNodeByKey,
   $getSelection,
   $isNodeSelection,
   CLICK_COMMAND,
@@ -26,19 +23,18 @@ import {
   DOMExportOutput,
   KEY_BACKSPACE_COMMAND,
   KEY_DELETE_COMMAND,
-  LexicalCommand, LexicalEditor,
+  LexicalCommand,
+  LexicalEditor,
   LexicalNode,
   NodeKey,
   SerializedLexicalNode,
   Spread,
 } from 'lexical';
 import * as React from 'react';
-import {Suspense,useCallback, useEffect, useState } from 'react';
-import {$createBudgetLinkNode, BudgetLinkNode} from "./BudgetLinkNode";
-import {INSERT_TABLE_COMMAND} from "@lexical/table";
-import TextInput from "../ui/TextInput";
-import {DialogActions} from "../ui/Dialog";
-import {mergeRegister} from "@lexical/utils";
+import {useCallback, useEffect, useState} from 'react';
+
+import {InputForText} from './../plugins/TextLinkPlugin';
+import Button from './../ui/Button';
 
 export type Options = ReadonlyArray<Option>;
 
@@ -195,7 +191,7 @@ const currencyList: {code: string; name: string}[] = [
   {code: 'TOP', name: "Tongan Pa'anga"},
   {code: 'TRY', name: 'Turkish Lira'},
   {code: 'TTD', name: 'Trinidad & Tobago Dollar'},
-  {code: 'TWD', name: 'New Taiwan Dollar'},
+  {code: 'TWD', name: 'Taiwan New Dollar'},
   {code: 'TZS', name: 'Tanzanian Shilling'},
   {code: 'UAH', name: 'Ukrainian Hryvnia'},
   {code: 'UGX', name: 'Ugandan Shilling'},
@@ -216,40 +212,54 @@ const currencyList: {code: string; name: string}[] = [
   {code: 'ZMK', name: 'Zambian Kwacha'},
 ];
 // list of categories ['Accommodation','Transportation'] in array format
-const categories: string[] = ['Accommodation', 'Transportation','Food','Entertainment','Other'];
+const categories: string[] = [
+  'Accommodation',
+  'Transportation',
+  'Food',
+  'Entertainment',
+  'Other',
+];
 
 export function getCurrencies() {
-  let map = new Map<string, string>();
-  currencyList.map( (myobj) => {
-    map.set(myobj.name,myobj.code);
+  const map = new Map<string, string>();
+  currencyList.map((myobj) => {
+    map.set(myobj.name, myobj.code);
   });
 
-  let ar = [...map.entries()], sortedArray = ar.sort(), sortedMap = new Map(sortedArray), html = '', newObj : {code: string; name: string}[] = [] ;
+  const ar = [...map.entries()];
+    const sortedArray = ar.sort();
+    const sortedMap = new Map(sortedArray);
+    const newObj: {code: string; name: string}[] = [];
 
-  sortedMap.forEach( (key,value) => {
-    newObj.push({code: key, name : value})
+  sortedMap.forEach((key, value) => {
+    newObj.push({code: key, name: value});
   });
 
   return newObj.map((curr) => {
-    return (<option key={curr.code} value={curr.code}>{curr.name}
-    </option>);
+    return (
+      <option key={curr.code} value={curr.code}>
+        {curr.name}
+      </option>
+    );
   });
 }
 
 export function getCategories() {
   return categories.map((category) => {
-    return (<option key={category} value={category}>{category}
-    </option>);
+    return (
+      <option key={category} value={category}>
+        {category}
+      </option>
+    );
   });
 }
 
-
-function createUID(): string {
-  return Math.random()
-    .toString(36)
-    .replace(/[^a-z]+/g, '')
-    .substr(0, 5);
-}
+// function createUID(): string {
+//   return Math.random()
+//     .toString(36)
+//     .replace(/[^a-z]+/g, '')
+//     .substr(0, 5);
+// }
 
 export type TravelBudgetOption = Readonly<{
   title: string;
@@ -276,11 +286,12 @@ function TravelBudgetComponent({nodeKey}: {nodeKey: NodeKey}) {
   const [editor] = useLexicalComposerContext();
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
-  const [title, setTitle] = useState('https://disneyland.disney.go.com/destinations/disneyland');
+  const [title, setTitle] = useState(
+    'https://disneyland.disney.go.com/destinations/disneyland',
+  );
   const [amount, setAmount] = useState(100);
   const [curr, setCurr] = useState('idr');
   const [category, setCategory] = useState('transportation');
-
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -339,146 +350,169 @@ function TravelBudgetComponent({nodeKey}: {nodeKey: NodeKey}) {
 
   return (
     <div className="Modal__content">
-                <div className="TravelBudgetNode__container">
-                    <div className="TravelBudgetNode__inner">
-                        <div className="TravelBudgetNode__fieldsContainer">
-                            <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper">
-                                    <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__title"
-                                                  placeholder={title} value={title} onChange={setTitle} />
-                                </div>
-                            </div>
+      <div className="TravelBudgetNode__container">
+        <div className="TravelBudgetNode__inner">
+          <div className="TravelBudgetNode__fieldsContainer">
+            <div className="TravelBudgetNode__singlefieldContainer">
+              <div className="TravelBudgetNode__textInputWrapper">
+                <InputForText
+                  className="TravelBudgetNode__optionInput TravelBudgetNode__title"
+                  placeholder={title}
+                  value={title}
+                  onChange={setTitle}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="TravelBudgetNode__inner">
+          <div className="TravelBudgetNode__fieldsContainer">
+            <div className="TravelBudgetNode__singlefieldContainer">
+              <div className="TravelBudgetNode__textInputWrapper">
+                <select
+                  defaultValue={curr}
+                  onChange={(e) => setCurr(e.target.value)}
+                  className="TravelBudgetNode__optionInput"
+                  name="currency"
+                  id="currency">
+                  {getCurrencies()}
+                </select>
+              </div>
+            </div>
 
-                        </div>
-                    </div>
-                    <div className="TravelBudgetNode__inner">
-                        <div className="TravelBudgetNode__fieldsContainer">
-                            <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper"><select defaultValue={curr} onChange={e => setCurr(e.target.value)}
-                                    className="TravelBudgetNode__optionInput"
-                                    name="currency" id="currency">
-                                  {getCurrencies()}
-                                </select></div>
-                            </div>
+            <div className="TravelBudgetNode__singlefieldContainer">
+              <div className="TravelBudgetNode__textInputWrapper">
+                <InputForText
+                  className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
+                  placeholder={'amount'}
+                  value={amount}
+                  onChange={setAmount}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
 
-
-                            <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper">
-                                    <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
-                                                  placeholder={'amount'} value={amount} onChange={setAmount} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="TravelBudgetNode__inner">
-                        <div className="TravelBudgetNode__fieldsContainer">
-                            <div className="TravelBudgetNode__singlefieldContainer">
-                                <div className="TravelBudgetNode__textInputWrapper">
-                                    <select defaultValue={category} onChange={e => setCategory(e.target.value)}
-                                            className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
-                                    name="category" id="category">
-                                      {getCategories()}
-                                </select></div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-
-                <Button
-                    onClick={() => {
-                        editor.update( () => {
-                           /* const rel = `${curr},${amount},${category}`;
+        <div className="TravelBudgetNode__inner">
+          <div className="TravelBudgetNode__fieldsContainer">
+            <div className="TravelBudgetNode__singlefieldContainer">
+              <div className="TravelBudgetNode__textInputWrapper">
+                <select
+                  defaultValue={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
+                  name="category"
+                  id="category">
+                  {getCategories()}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <Button
+        onClick={() => {
+          editor.update(() => {
+            /* const rel = `${curr},${amount},${category}`;
                             const myElement = $createTextLink(title, rel);
                             console.log(rel);*/
-
-                          //const budget = new BudgetLinkNode();
-
-                        });
-                        editor.focus();
-                    }}>
-                    Confirm
-                </Button>{' '}
-                <Button
-                    onClick={() => {
-                        editor.focus();
-                    }}>
-                    Cancel x
-                </Button>
-            </div>
+            //const budget = new BudgetLinkNode();
+          });
+          editor.focus();
+        }}>
+        Confirm
+      </Button>{' '}
+      <Button
+        onClick={() => {
+          editor.focus();
+        }}>
+        Cancel x
+      </Button>
+    </div>
   );
 }
 
-
-
 export function InsertBudget({
-                                    editor,
-                                    onClose,
-                                  }: {
+  editor,
+  onClose,
+}: {
   editor: LexicalEditor;
   onClose: () => void;
 }): JSX.Element {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [title, setTitle] = useState('https://disneyland.disney.go.com/destinations/disneyland');
+  const [title, setTitle] = useState(
+    'https://disneyland.disney.go.com/destinations/disneyland',
+  );
   const [amount, setAmount] = useState(100);
   const [curr, setCurr] = useState('idr');
   const [category, setCategory] = useState('transportation');
 
   return (
-      <div className="Modal__content">
-        <div className="TravelBudgetNode__container">
-          <div className="TravelBudgetNode__inner">
-            <div className="TravelBudgetNode__fieldsContainer">
-              <div className="TravelBudgetNode__singlefieldContainer">
-                <div className="TravelBudgetNode__textInputWrapper">
-                  <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__title"
-                                placeholder={title} value={title} onChange={setTitle} />
-                </div>
+    <div className="Modal__content">
+      <div className="TravelBudgetNode__container">
+        <div className="TravelBudgetNode__inner">
+          <div className="TravelBudgetNode__fieldsContainer">
+            <div className="TravelBudgetNode__singlefieldContainer">
+              <div className="TravelBudgetNode__textInputWrapper">
+                <InputForText
+                  className="TravelBudgetNode__optionInput TravelBudgetNode__title"
+                  placeholder={title}
+                  value={title}
+                  onChange={setTitle}
+                />
               </div>
-
             </div>
           </div>
-          <div className="TravelBudgetNode__inner">
-            <div className="TravelBudgetNode__fieldsContainer">
-              <div className="TravelBudgetNode__singlefieldContainer">
-                <div className="TravelBudgetNode__textInputWrapper"><select defaultValue={curr} onChange={e => setCurr(e.target.value)}
-                                                                            className="TravelBudgetNode__optionInput"
-                                                                            name="currency" id="currency">
+        </div>
+        <div className="TravelBudgetNode__inner">
+          <div className="TravelBudgetNode__fieldsContainer">
+            <div className="TravelBudgetNode__singlefieldContainer">
+              <div className="TravelBudgetNode__textInputWrapper">
+                <select
+                  defaultValue={curr}
+                  onChange={(e) => setCurr(e.target.value)}
+                  className="TravelBudgetNode__optionInput"
+                  name="currency"
+                  id="currency">
                   {getCurrencies()}
-                </select></div>
-              </div>
-
-
-              <div className="TravelBudgetNode__singlefieldContainer">
-                <div className="TravelBudgetNode__textInputWrapper">
-                  <InputForText className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
-                                placeholder={'amount'} value={amount} onChange={setAmount} />
-                </div>
+                </select>
               </div>
             </div>
-          </div>
 
-          <div className="TravelBudgetNode__inner">
-            <div className="TravelBudgetNode__fieldsContainer">
-              <div className="TravelBudgetNode__singlefieldContainer">
-                <div className="TravelBudgetNode__textInputWrapper">
-                  <select defaultValue={category} onChange={e => setCategory(e.target.value)}
-                          className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
-                          name="category" id="category">
-                    {getCategories()}
-                  </select></div>
+            <div className="TravelBudgetNode__singlefieldContainer">
+              <div className="TravelBudgetNode__textInputWrapper">
+                <InputForText
+                  className="TravelBudgetNode__optionInput TravelBudgetNode__amount"
+                  placeholder={'amount'}
+                  value={amount}
+                  onChange={setAmount}
+                />
               </div>
-
             </div>
           </div>
         </div>
 
-        <Button
-            onClick={() => {
-              editor.update( () => {
-                /*
+        <div className="TravelBudgetNode__inner">
+          <div className="TravelBudgetNode__fieldsContainer">
+            <div className="TravelBudgetNode__singlefieldContainer">
+              <div className="TravelBudgetNode__textInputWrapper">
+                <select
+                  defaultValue={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="TravelBudgetNode__optionInput TravelBudgetNode__accomodation"
+                  name="category"
+                  id="category">
+                  {getCategories()}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <Button
+        onClick={() => {
+          editor.update(() => {
+            /*
                 const elBudget =$createBudgetLinkNode({
                   amount:amount,
                   category:category,
@@ -491,20 +525,20 @@ export function InsertBudget({
                 // Finally, append the paragraph to the root
                 root.append(paragraphNode);
                 */
-              });
-              editor.focus();
-              onClose();
-            }}>
-          Confirm
-        </Button>{' '}
-        <Button
-            onClick={() => {
-              editor.focus();
-              onClose();
-            }}>
-          Cancel
-        </Button>
-      </div>
+          });
+          editor.focus();
+          onClose();
+        }}>
+        Confirm
+      </Button>{' '}
+      <Button
+        onClick={() => {
+          editor.focus();
+          onClose();
+        }}>
+        Cancel
+      </Button>
+    </div>
   );
 }
 
