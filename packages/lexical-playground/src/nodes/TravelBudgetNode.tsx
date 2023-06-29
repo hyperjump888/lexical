@@ -217,6 +217,7 @@ const categories: string[] = [
   'Transportation',
   'Food',
   'Entertainment',
+  'Shopping',
   'Other',
 ];
 
@@ -227,9 +228,9 @@ export function getCurrencies() {
   });
 
   const ar = [...map.entries()];
-    const sortedArray = ar.sort();
-    const sortedMap = new Map(sortedArray);
-    const newObj: {code: string; name: string}[] = [];
+  const sortedArray = ar.sort();
+  const sortedMap = new Map(sortedArray);
+  const newObj: {code: string; name: string}[] = [];
 
   sortedMap.forEach((key, value) => {
     newObj.push({code: key, name: value});
