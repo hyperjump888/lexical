@@ -398,3 +398,9 @@ Lexical engineers are checking this regularly.
 ### License
 
 Lexical is [MIT licensed](https://github.com/facebook/lexical/blob/main/LICENSE).
+
+### HOW TO READ MY OWN CODE
+
+(1) Open Terminal in VSCode, and run
+    npm run dev
+(2) Debug the code
