@@ -7,17 +7,17 @@
  */
 import './index.css';
 
-import {$isAutoLinkNode, $isLinkNode, LinkNode, TOGGLE_LINK_COMMAND} from '@lexical/link';
+import {$isAutoLinkNode, $isLinkNode, LinkNode} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {$findMatchingParent, mergeRegister} from '@lexical/utils';
 import {
-    $createParagraphNode, $createTextNode,
+    $createParagraphNode, $createTextNode, $getNodeByKey,
     $getRoot,
     $getSelection,
-    $isRangeSelection, $isRootOrShadowRoot,
+    $isRangeSelection, $isRootOrShadowRoot, $setSelection,
     COMMAND_PRIORITY_CRITICAL,
     COMMAND_PRIORITY_HIGH,
-    COMMAND_PRIORITY_LOW,
+    COMMAND_PRIORITY_LOW, ElementNode,
     GridSelection,
     KEY_ESCAPE_COMMAND,
     LexicalEditor,
@@ -31,19 +31,10 @@ import {createPortal} from 'react-dom';
 
 import {getCategories, getCurrencies} from '../../nodes/TravelBudgetNode';
 import Button from '../../ui/Button';
-import LinkPreview from '../../ui/LinkPreview';
 import {getSelectedNode} from '../../utils/getSelectedNode';
 import {setFloatingElemPosition} from '../../utils/setFloatingElemPosition';
-import {sanitizeUrl} from '../../utils/url';
 import {InputForNumber, InputForText} from '../TextLinkPlugin';
-import Editor from "../../Editor";
 
-type BudgetType = {
-    title : string,
-    curr : string,
-    amount : string,
-    category: string
-}
 
 function TestBudgetPlugin({
                               editor,
@@ -68,8 +59,9 @@ function TestBudgetPlugin({
 }): JSX.Element {
     const editorRef = useRef<HTMLDivElement | null>(null);
     //const inputRef = useRef<HTMLInputElement>(null);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [linkUrl, setLinkUrl] = useState('');
-    const [isEditMode, setEditMode] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [title, setTitle] = useState(titlex || 'DisneyLand');
     const [mytitle, setMytitle] = useState(titlex || 'DisneyLand');
 
@@ -78,18 +70,26 @@ function TestBudgetPlugin({
     const [category, setCategory] = useState(categoryx || 'Transportation');
 
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [lastSelection, setLastSelection] = useState<
         RangeSelection | GridSelection | NodeSelection | null
         >(null);
 
     const updateLinkEditor = useCallback(() => {
         const selection = $getSelection();
-
         if ($isRangeSelection(selection)) {
             const node = getSelectedNode(selection);
             const parent = node.getParent();
             if ($isLinkNode(parent)) {
                 setLinkUrl(parent.getURL());
+                //console.log('range selection ' + JSON.stringify(parent));
+                const rel = parent?.getRel()?.split(',') || [];
+                setMytitle(parent.getTextContent());
+                setAmount(parseFloat(rel[1]) || 0);
+                //setMytitle(parent.getTextContent);
+                setCurr(rel[0]);
+                setCategory(rel[2]);
+
             } else if ($isLinkNode(node)) {
                 setLinkUrl(node.getURL());
             } else {
@@ -131,7 +131,6 @@ function TestBudgetPlugin({
                 setFloatingElemPosition(null, editorElem, anchorElem);
             }
             setLastSelection(null);
-            setEditMode(false);
             setLinkUrl('');
         }
 
@@ -214,9 +213,11 @@ function TestBudgetPlugin({
 
     const saveButton = (e : any) => {
         editor.update( () => {
+            // @ts-ignore
+            let node :TextNode | ElementNode;
             const selection = $getSelection();
             if ($isRangeSelection(selection)) {
-                const node = getSelectedNode(selection);
+                node = getSelectedNode(selection);
                 const linkParent = $findMatchingParent(node, $isLinkNode);
                 const anchorNode = selection.anchor.getNode();
                 anchorNode.setTextContent(mytitle.trim());
@@ -233,24 +234,27 @@ function TestBudgetPlugin({
                 }
                 const elementKey = element.getKey();
                 const elementDOM = editor.getElementByKey(elementKey);
+                //const someNode = $getNodeByKey(elementKey);
+
                 if (elementDOM != null) {
                     const currentElement = elementDOM.querySelector('a');
                     const rel = `${curr},${amount},${category}`;
                     if (currentElement != null) {
+                        // @ts-ignore
                         currentElement.setAttribute('data-amount',amount);
                         currentElement.setAttribute('data-category',category);
                         currentElement.setAttribute('data-currency',curr);
-                        //currentElement.setAttribute('href',title);
                         currentElement.setAttribute('rel',rel);
                         const writable = linkParent?.getWritable();
                         if (writable) writable.__rel = rel;
                     }
                 }
-            }
 
-            e.target.style.backgroundColor ='green';
-            e.target.style.color ='white';
-            e.target.focus();
+                e.target.style.backgroundColor ='green';
+                e.target.style.color ='white';
+                e.target.focus();
+                $setSelection(null);
+            }
 
             changeprops();
             function changeprops() {
@@ -258,15 +262,9 @@ function TestBudgetPlugin({
                     e.target.style.backgroundColor = '#eee';
                     e.target.style.color = 'rgb(61, 135, 245)';
                     e.target.focus();
-
                 }, 1200);
             }
-            // const root = $getRoot();
-            // const text = $createTextNode(' ');
-            // const paragraph = $createParagraphNode();
-            // paragraph.append(text);
-            // root.append(paragraph);
-            // root.selectEnd();
+            //someNode.selectNext();
         });
     }
 
@@ -327,7 +325,7 @@ function TestBudgetPlugin({
                         </div>
 
                         <Button
-                            onClick={(e) => {saveButton(e)}}>
+                            onClick={(e) => saveButton(e)}>
                             Save
                         </Button>{' '}
 
@@ -372,6 +370,7 @@ function useTestFloatingLinkEditorToolbar(
                         setCurr(arr[0]);
                         setAmount(arr[1]);
                         setCategory(arr[2]);
+
                     }
                 }
             } else {
