@@ -531,6 +531,10 @@ i.equation {
   background-image: url(images/icons/plus-slash-minus.svg);
 }
 
+i.timeline {
+  background-image: url(images/icons/timeline.svg);
+}
+
 i.gif {
   background-image: url(images/icons/filetype-gif.svg);
 }
