@@ -11,6 +11,7 @@ import 'katex/dist/katex.css';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {$insertNodeToNearestRoot} from '@lexical/utils';
 import {
+  $createParagraphNode,
   $getSelection,
   $isRangeSelection,
   COMMAND_PRIORITY_EDITOR,
@@ -53,7 +54,7 @@ export function InsertTimelineItemDialog({
   return <KatexEquationAlterer onConfirm={onEquationConfirm} />;
 }
 
-export default function EquationsPlugin(): JSX.Element | null {
+export default function TimelineItemPlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
@@ -68,10 +69,20 @@ export default function EquationsPlugin(): JSX.Element | null {
 
         const focusNode = selection.focus.getNode();
         if (focusNode !== null) {
-          // const {equation, inline} = payload;
-          const fooNode = $createTextNode('foo');
+          // Create a new ParagraphNode
+          const paragraphNode = $createParagraphNode();
 
-          $insertNodeToNearestRoot(fooNode);
+          // Create a new TextNode
+          const textNode = $createTextNode(
+            '#10:00 [bus--blue]: Enjoy the natural attractions of Lake Bedugul',
+          );
+
+          // Append the text node to the paragraph
+          paragraphNode.append(textNode);
+
+          // Finally, append the paragraph to the root
+          $insertNodeToNearestRoot(paragraphNode);
+          // root.append(paragraphNode);
         }
 
         return true;
