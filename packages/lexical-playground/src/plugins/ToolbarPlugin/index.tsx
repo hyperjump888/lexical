@@ -89,7 +89,7 @@ import {
 } from '../ImagesPlugin';
 import {InsertPollDialog} from '../PollPlugin';
 import {InsertNewTableDialog, InsertTableDialog} from '../TablePlugin';
-import {InsertBudget} from '../../nodes/TravelBudgetNode';
+import {InsertTimelineItemDialog} from '../TimelineItemPlugin';
 
 const blockTypeToBlockName = {
   bullet: 'Bulleted List',
@@ -902,6 +902,19 @@ export default function ToolbarPlugin(): JSX.Element {
               className="item">
               <i className="icon equation" />
               <span className="text">Equation</span>
+            </DropDownItem>
+            <DropDownItem
+              onClick={() => {
+                showModal('Insert Timeline', (onClose) => (
+                  <InsertTimelineItemDialog
+                    activeEditor={activeEditor}
+                    onClose={onClose}
+                  />
+                ));
+              }}
+              className="item">
+              <i className="icon timeline" />
+              <span className="text">Timeline</span>
             </DropDownItem>
             <DropDownItem
               onClick={() => {
