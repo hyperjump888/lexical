@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
+/* eslint sort-keys: 0 */
 
 import 'katex/dist/katex.css';
 
@@ -23,11 +24,12 @@ import {useCallback, useEffect} from 'react';
 import * as React from 'react';
 
 import {$createTextNode} from '../../../../lexical/src/nodes/LexicalTextNode';
-import KatexEquationAlterer from '../../ui/KatexEquationAlterer';
+import TimelineItemEdit from '../../ui/TimelineItemEdit';
 
 type CommandPayload = {
-  equation: string;
-  inline: boolean;
+  tldesc: string;
+  tlicon: string;
+  tltime: string;
 };
 
 export const INSERT_TIMELINEITEM_COMMAND: LexicalCommand<CommandPayload> =
@@ -40,18 +42,19 @@ export function InsertTimelineItemDialog({
   activeEditor: LexicalEditor;
   onClose: () => void;
 }): JSX.Element {
-  const onEquationConfirm = useCallback(
-    (equation: string, inline: boolean) => {
+  const onTimelineConfirm = useCallback(
+    (tltime: string, tlicon: string, tldesc: string) => {
       activeEditor.dispatchCommand(INSERT_TIMELINEITEM_COMMAND, {
-        equation,
-        inline,
+        tldesc,
+        tlicon,
+        tltime,
       });
       onClose();
     },
     [activeEditor, onClose],
   );
 
-  return <KatexEquationAlterer onConfirm={onEquationConfirm} />;
+  return <TimelineItemEdit onConfirm={onTimelineConfirm} />;
 }
 
 export default function TimelineItemPlugin(): JSX.Element | null {
@@ -61,6 +64,7 @@ export default function TimelineItemPlugin(): JSX.Element | null {
     return editor.registerCommand<CommandPayload>(
       INSERT_TIMELINEITEM_COMMAND,
       (payload) => {
+        const {tldesc, tlicon, tltime} = payload;
         const selection = $getSelection();
 
         if (!$isRangeSelection(selection)) {
@@ -74,7 +78,8 @@ export default function TimelineItemPlugin(): JSX.Element | null {
 
           // Create a new TextNode
           const textNode = $createTextNode(
-            '#10:00 [bus--blue]: Enjoy the natural attractions of Lake Bedugul',
+            //  '#10:00 [bus--blue]: Enjoy the natural attractions of Lake Bedugul',
+            tltime + tlicon + tldesc,
           );
 
           // Append the text node to the paragraph
