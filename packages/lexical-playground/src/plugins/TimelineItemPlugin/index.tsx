@@ -76,10 +76,13 @@ export default function TimelineItemPlugin(): JSX.Element | null {
           // Create a new ParagraphNode
           const paragraphNode = $createParagraphNode();
 
+          const tltimeFormat = tltime.length > 0 ? '#' + tltime + ' ' : tltime;
+          const tliconFormat = tlicon.length > 0 ? '[' + tlicon + ']' : tlicon;
+
           // Create a new TextNode
           const textNode = $createTextNode(
             //  '#10:00 [bus--blue]: Enjoy the natural attractions of Lake Bedugul',
-            tltime + tlicon + tldesc,
+            tltimeFormat + tliconFormat + ': ' + tldesc,
           );
 
           // Append the text node to the paragraph
