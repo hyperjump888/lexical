@@ -36,10 +36,10 @@ export default function TimelineItemEdit({onConfirm}: Props): JSX.Element {
             setTltime(event.target.value);
           }}
           value={tltime}
-          className="TimelineItemEdit_textArea"
+          className="input-text-field"
         />
       </div>
-      <div className="TimelineItemEdit_defaultRow">Icon (optional) </div>
+      <div className="TimelineItemEdit_defaultRow">Icon </div>
       <AutoIcons />
 
       <div className="TimelineItemEdit_centerRow">
@@ -48,7 +48,7 @@ export default function TimelineItemEdit({onConfirm}: Props): JSX.Element {
             setTlicon(event.target.value);
           }}
           value={tlicon}
-          className="TimelineItemEdit_textArea"
+          className="input-text-field"
         />
       </div>
       <div className="TimelineItemEdit_defaultRow">Description </div>
@@ -58,7 +58,7 @@ export default function TimelineItemEdit({onConfirm}: Props): JSX.Element {
             setTldesc(event.target.value);
           }}
           value={tldesc}
-          className="TimelineItemEdit_textArea"
+          className="input-text-field"
         />
       </div>
 

@@ -84,7 +84,7 @@ export default function AutoIcons() {
                 <input
                   onChange={onChange}
                   value={value}
-                  className="searchInput"
+                  className="input-text-field"
                   placeholder="Home.."
                 />
               </td>
