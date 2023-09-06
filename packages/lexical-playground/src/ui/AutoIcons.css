@@ -7,6 +7,15 @@
   border: 0;
   border-radius: 0.125rem;
 }
+.btn-icon {
+    margin:2px;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);
+    transition: color 0.15s ease-in-out,background-color 0.15s ease-in-out,border-color 0.15s ease-in-out,box-shadow 0.15s ease-in-out,-webkit-box-shadow 0.15s ease-in-out;
+    font-size: .81rem;
+}
+.divicons {
+    max-width:200px
+}
 .tabler-123 {
   background-image: url(/src/assets/icons/123.svg);
   display: inline-block;
