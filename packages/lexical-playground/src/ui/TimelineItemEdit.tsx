@@ -11,6 +11,7 @@
 import * as React from 'react';
 import {useCallback, useState} from 'react';
 
+import AutoIcons from './AutoIcons';
 import Button from './Button';
 
 type Props = {
@@ -39,6 +40,8 @@ export default function TimelineItemEdit({onConfirm}: Props): JSX.Element {
         />
       </div>
       <div className="TimelineItemEdit_defaultRow">Icon (optional) </div>
+      <AutoIcons />
+
       <div className="TimelineItemEdit_centerRow">
         <input
           onChange={(event) => {
