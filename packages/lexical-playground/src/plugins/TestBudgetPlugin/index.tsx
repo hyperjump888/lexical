@@ -7,12 +7,10 @@
  */
 import './index.css';
 
-import {$isAutoLinkNode, $isLinkNode, LinkNode} from '@lexical/link';
+import {$isAutoLinkNode, $isLinkNode} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {$findMatchingParent, mergeRegister} from '@lexical/utils';
 import {
-    $createParagraphNode, $createTextNode, $getNodeByKey,
-    $getRoot,
     $getSelection,
     $isRangeSelection, $isRootOrShadowRoot, $setSelection,
     COMMAND_PRIORITY_CRITICAL,
@@ -30,7 +28,6 @@ import * as React from 'react';
 import {createPortal} from 'react-dom';
 
 import {getCategories, getCurrencies} from '../../nodes/TravelBudgetNode';
-import Button from '../../ui/Button';
 import {getSelectedNode} from '../../utils/getSelectedNode';
 import {setFloatingElemPosition} from '../../utils/setFloatingElemPosition';
 import {InputForNumber, InputForText} from '../TextLinkPlugin';
@@ -211,7 +208,7 @@ function TestBudgetPlugin({
         setCategory(e.target.value);
     };
 
-    const saveButton = (e : any) => {
+    const saveButton = (e : any) : void => {
         editor.update( () => {
             // @ts-ignore
             let node :TextNode | ElementNode;
@@ -262,7 +259,8 @@ function TestBudgetPlugin({
                     e.target.style.backgroundColor = '#eee';
                     e.target.style.color = 'rgb(61, 135, 245)';
                     e.target.focus();
-                }, 1200);
+
+                }, 2000);
             }
             //someNode.selectNext();
         });
@@ -324,10 +322,9 @@ function TestBudgetPlugin({
                             </div>
                         </div>
 
-                        <Button
-                            onClick={(e) => saveButton(e)}>
+                        <button onClick={saveButton} className="Button__root">
                             Save
-                        </Button>{' '}
+                        </button>{' '}
 
                     </div>
                 </>
@@ -363,7 +360,6 @@ function useTestFloatingLinkEditorToolbar(
                 const elementKey = linkParent.getKey();
                 const currentElement = editor.getElementByKey(elementKey);
                 const rel = currentElement?.getAttribute('rel');
-                console.log(rel);
                 if (rel) {
                     const arr = rel.split(',');
                     if (arr.length) {
@@ -406,7 +402,7 @@ function useTestFloatingLinkEditorToolbar(
                 anchorElem={anchorElem}
                 setIsLink={setIsLink}
                 titlex={title}
-                amountx={amount}
+                amountx={parseInt(amount)}
                 currx={curr}
                 categoryx={category}
 

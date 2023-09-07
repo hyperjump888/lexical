@@ -30,6 +30,7 @@ type CommandPayload = {
   tldesc: string;
   tlicon: string;
   tltime: string;
+  tlcolor: string;
 };
 
 export const INSERT_TIMELINEITEM_COMMAND: LexicalCommand<CommandPayload> =
@@ -43,11 +44,12 @@ export function InsertTimelineItemDialog({
   onClose: () => void;
 }): JSX.Element {
   const onTimelineConfirm = useCallback(
-    (tltime: string, tlicon: string, tldesc: string) => {
+    (tltime: string, tlicon: string, tldesc: string, tlcolor: string) => {
       activeEditor.dispatchCommand(INSERT_TIMELINEITEM_COMMAND, {
         tldesc,
         tlicon,
         tltime,
+        tlcolor
       });
       onClose();
     },
@@ -64,7 +66,7 @@ export default function TimelineItemPlugin(): JSX.Element | null {
     return editor.registerCommand<CommandPayload>(
       INSERT_TIMELINEITEM_COMMAND,
       (payload) => {
-        const {tldesc, tlicon, tltime} = payload;
+        const {tldesc, tlicon, tltime, tlcolor} = payload;
         const selection = $getSelection();
 
         if (!$isRangeSelection(selection)) {
@@ -77,7 +79,7 @@ export default function TimelineItemPlugin(): JSX.Element | null {
           const paragraphNode = $createParagraphNode();
 
           const tltimeFormat = tltime.length > 0 ? '#' + tltime + ' ' : tltime;
-          const tliconFormat = tlicon.length > 0 ? '[' + tlicon + ']' : tlicon;
+          const tliconFormat = tlicon.length > 0 ? `[${tlicon}--${tlcolor}]` : tlicon;
 
           // Create a new TextNode
           const textNode = $createTextNode(

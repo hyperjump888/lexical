@@ -5,30 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-
-/* tbody html
-<tr>
-                        <td>
-                            <button className="btn btn-secondary btn-icon btn-warning btn-icon-selected"
-                                    value="tabler-123" title="tabler-123" style=""><i className=" tabler-123"></i>
-                            </button>
-                        </td>
-                        <td>
-                            <button className="btn btn-secondary btn-icon" value="tabler-24-hours"
-                                    title="tabler-24-hours" style=""><i className=" tabler-24-hours"></i></button>
-                        </td>
-                        <td>
-                            <button className="btn btn-secondary btn-icon" value="tabler-2fa" title="tabler-2fa"
-                                    style=""><i className=" tabler-2fa"></i></button>
-                        </td>
-                        <td>
-                            <button className="btn btn-secondary btn-icon" value="tabler-360-view"
-                                    title="tabler-360-view" style=""><i className=" tabler-360-view"></i></button>
-                        </td>
-                    </tr>
-
- */
-
 import './AutoIcons.css';
 
 import * as React from 'react';
@@ -36,11 +12,12 @@ import {useState} from 'react';
 
 //icons collection
 import tablerIcons from './AutoIconsData';
-import Button from './Button';
+
 
 export default function AutoIcons() {
   const [value, setValue] = useState<string>('');
   const [data, setData] = useState<JSX.Element>(<div />);
+  const [icon, setIcon] = useState<string>('tabler-question-mark');
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
@@ -55,20 +32,22 @@ export default function AutoIcons() {
     setData(dataBody(icons));
   };
 
+  const changeIcon = (str:string) => {
+      setIcon(`tabler-${str}`);
+      setValue(str);
+  };
+
   const dataBody = (arr: string[]) => {
     return (
       <div className="divicons">
-
           {arr.map((item) => {
-            const tablerItem = `tabler-${item}`;
+            const tablerItem = `tabler-${item} tabler-set-icon`;
             return (
-                <button className="btn btn-secondary btn-icon" value={item}>
+                <button key={item} onClick={() => changeIcon(item)} className="btn btn-secondary btn-icon" title={item}>
                   <i className={tablerItem} />
                 </button>
-
             );
           })}
-
       </div>
     );
   };
@@ -80,13 +59,17 @@ export default function AutoIcons() {
         <table className="table-icons">
           <thead>
             <tr>
-              <td colSpan={4}>
-                <input
-                  onChange={onChange}
-                  value={value}
-                  className="input-text-field"
-                  placeholder="Home.."
-                />
+              <td>
+                  <div className="input-group">
+                      <input
+                          onChange={onChange}
+                          value={value}
+                          className="input-text-field"
+                          placeholder="Home.."
+                      />
+                      <button className="btn btn-secondary btn-icon" ><i className={ icon ? icon + ' tabler-set-icon' : 'tabler-set-icon'} /></button>
+                  </div>
+
               </td>
             </tr>
           </thead>

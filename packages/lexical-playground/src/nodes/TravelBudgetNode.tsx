@@ -611,6 +611,7 @@ function convertTravelBudgetElement(): DOMConversionOutput {
 }
 
 export function $createTravelBudgetNode(): TravelBudgetNode {
+  // @ts-ignore
   return $applyNodeReplacement(new TravelBudgetNode());
 }
 

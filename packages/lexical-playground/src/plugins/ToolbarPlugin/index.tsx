@@ -805,6 +805,19 @@ export default function ToolbarPlugin(): JSX.Element {
             buttonAriaLabel="Insert specialized editor node"
             buttonIconClassName="icon plus">
             <DropDownItem
+                onClick={() => {
+                  showModal('Insert Timeline', (onClose) => (
+                      <InsertTimelineItemDialog
+                          activeEditor={activeEditor}
+                          onClose={onClose}
+                      />
+                  ));
+                }}
+                className="item">
+              <i className="icon timeline" />
+              <span className="text">Timeline</span>
+            </DropDownItem>
+            <DropDownItem
               onClick={() => {
                 activeEditor.dispatchCommand(
                   INSERT_HORIZONTAL_RULE_COMMAND,
@@ -903,19 +916,7 @@ export default function ToolbarPlugin(): JSX.Element {
               <i className="icon equation" />
               <span className="text">Equation</span>
             </DropDownItem>
-            <DropDownItem
-              onClick={() => {
-                showModal('Insert Timeline', (onClose) => (
-                  <InsertTimelineItemDialog
-                    activeEditor={activeEditor}
-                    onClose={onClose}
-                  />
-                ));
-              }}
-              className="item">
-              <i className="icon timeline" />
-              <span className="text">Timeline</span>
-            </DropDownItem>
+
             <DropDownItem
               onClick={() => {
                 editor.update(() => {
