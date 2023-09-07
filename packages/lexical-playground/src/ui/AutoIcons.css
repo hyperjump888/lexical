@@ -17,6 +17,9 @@
     display: flex;
     align-content: stretch;
 }
+.auto-icons {
+    width: 250px;
+}
 .input-group  > button{
    margin-bottom:13px;
 }

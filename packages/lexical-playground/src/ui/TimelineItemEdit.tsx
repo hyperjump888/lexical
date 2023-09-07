@@ -93,25 +93,16 @@ export default function TimelineItemEdit({onConfirm}: Props): JSX.Element {
       </div>
       <div className="TimelineItemEdit_defaultRow">Icon </div>
         <div className="auto-icons">
-            <table className="table-icons">
-                <thead>
-                <tr>
-                    <td>
-                        <div className="input-group">
-                            <input
-                                onChange={onChange}
-                                value={value}
-                                className="input-text-field"
-                                placeholder="Home.."
-                            />
-                            <button className="btn btn-secondary btn-icon" ><i className={ icon ? icon + ' tabler-set-icon' : 'tabler-set-icon'} /></button>
-                        </div>
-
-                    </td>
-                </tr>
-                </thead>
-                {data}
-            </table>
+            <div className="input-group">
+                <input
+                    onChange={onChange}
+                    value={value}
+                    className="input-text-field"
+                    placeholder="Home.."
+                />
+                <button className="btn btn-secondary btn-icon" ><i className={ icon ? icon + ' tabler-set-icon' : 'tabler-set-icon'} /></button>
+            </div>
+            {data}
         </div>
 
         <div className="TimelineItemEdit_defaultRow">Color </div>
