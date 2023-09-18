@@ -98,7 +98,7 @@ export default function TimelineItemEdit({onConfirm}: Props): JSX.Element {
                     onChange={onChange}
                     value={value}
                     className="input-text-field"
-                    placeholder="Home.."
+                    placeholder="type icon name here.."
                 />
                 <button className="btn btn-secondary btn-icon" ><i className={ icon ? icon + ' tabler-set-icon' : 'tabler-set-icon'} /></button>
             </div>

@@ -264,14 +264,13 @@ function TestBudgetPlugin({
             }
             //someNode.selectNext();
         });
-    }
+    };
 
     return (
-        <div ref={editorRef} key={title} className="link-editor">
-            {(
-                <>
+                 <>
+                <div ref={editorRef} key={title} className="link-editor">
                     <h2 className="title__link">Travel Budget</h2>
-                    <div ref={editorRef} className="Modal__content">
+                    <div className="Modal__content">
 
                         <div className="TravelBudgetNode__container">
                             <div className="TravelBudgetNode__inner">
@@ -327,9 +326,9 @@ function TestBudgetPlugin({
                         </button>{' '}
 
                     </div>
+                </div>
                 </>
-            )}
-        </div>
+
     );
 }
 

@@ -20,7 +20,9 @@ import {
   PASTE_COMMAND,
   TextNode,
 } from 'lexical';
-import {default as React, useEffect} from 'react';
+import * as React from 'react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import {useCallback, useEffect, useState} from 'react';
 
 export const INSERT_TEXTLINK_COMMAND: LexicalCommand<string> = createCommand(
   'INSERT_TEXTLINK_COMMAND',

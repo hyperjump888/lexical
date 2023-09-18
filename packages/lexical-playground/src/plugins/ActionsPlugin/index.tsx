@@ -199,62 +199,7 @@ export default function ActionsPlugin({
             <span className="lexhtml" onClick={(e) => lexicalToHTML(e, editor)}
             > </span>
 
-            <button
-                type="button"
-                className="action-button import"
-                onClick={() => importFile(editor)}
-                title="Import"
-                aria-label="Import editor state from JSON">
-                <i className="import" />
-            </button>
-            <button
-                type="button"
-                className="action-button export"
-                onClick={() =>
-                    exportFile(editor, {
-                        fileName: `Playground ${new Date().toISOString()}`,
-                        source: 'Playground',
-                    })
-                }
-                title="Export"
-                aria-label="Export editor state to JSON">
-                <i className="export" />
-            </button>
-            <button
-                className="action-button clear"
-                type="button"
-                disabled={isEditorEmpty}
-                onClick={() => {
-                    showModal('Clear editor', (onClose) => (
-                        <ShowClearDialog editor={editor} onClose={onClose} />
-                    ));
-                }}
-                title="Clear"
-                aria-label="Clear editor contents">
-                <i className="clear" />
-            </button>
-            <button
-                type="button"
-                className={`action-button ${!isEditable ? 'unlock' : 'lock'}`}
-                onClick={() => {
-                    // Send latest editor state to commenting validation server
-                    if (isEditable) {
-                        sendEditorState(editor);
-                    }
-                    editor.setEditable(!editor.isEditable());
-                }}
-                title="Read-Only Mode"
-                aria-label={`${!isEditable ? 'Unlock' : 'Lock'} read-only mode`}>
-                <i className={!isEditable ? 'unlock' : 'lock'} />
-            </button>
-            <button
-                type="button"
-                className="action-button"
-                onClick={handleMarkdownToggle}
-                title="Convert From Markdown"
-                aria-label="Convert from markdown">
-                <i className="markdown" />
-            </button>
+
             {isCollabActive && (
                 <button
                     type="button"
